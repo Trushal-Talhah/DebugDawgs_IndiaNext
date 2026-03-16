@@ -7,25 +7,27 @@ from app.api.routes import scan, scan_image, incidents
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("🛡️  CyberSentinel — Cyber Defense Platform")
+    print("🛡️  SentinelAI — Cyber Defense Platform")
     print(f"   LLM Provider  : {settings.LLM_PROVIDER.upper()}")
-    print(f"   Threat Areas  : 5/6 (Phishing | URL | Deepfake | Prompt Injection | Anomaly | AI Content)")
+    print(f"   Threat Areas  : Phishing | URL | Deepfake | Prompt Injection | Anomaly | AI Content")
+    print(f"   Fusion Engine : ENABLED — Multi-vector compound threat detection")
     print(f"   Agent Mode    : LangChain Tool-Calling AgentExecutor")
     print(f"   API Docs      : http://localhost:8000/docs")
     yield
-    print("Shutting down CyberSentinel.")
+    print("Shutting down SentinelAI.")
 
 
 app = FastAPI(
-    title="CyberSentinel — AI Cyber Defense Platform",
-    description="AI-powered multi-threat detection covering 5/6 threat areas with Explainable AI and Agentic tool-calling.",
-    version="1.0.0",
+    title="SentinelAI — AI Cyber Defense Platform",
+    description="AI-powered multi-threat detection with Explainable AI, Agentic tool-calling, and Multi-vector Fusion Engine.",
+    version="2.0.0",
     lifespan=lifespan
 )
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,7 +42,22 @@ app.include_router(incidents.router, prefix="/api", tags=["Incident Log"])
 async def health():
     return {
         "status": "ok",
+        "version": "2.0.0",
         "llm_provider": settings.LLM_PROVIDER,
-        "threat_areas": ["phishing", "url", "deepfake", "prompt_injection", "anomaly_login", "ai_content"],
-        "version": "1.0.0"
+        "fusion_engine": "enabled",
+        "threat_areas": [
+            "phishing",
+            "url",
+            "deepfake",
+            "prompt_injection",
+            "anomaly_login",
+            "ai_content",
+        ],
+        "valid_input_types": [
+            "email",
+            "url",
+            "prompt",
+            "login_log",
+            "ai_text",
+        ],
     }
