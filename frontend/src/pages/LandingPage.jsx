@@ -91,7 +91,7 @@ function LandingNav() {
     >
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 no-underline group">
+        <Link to="/" className="flex items-center gap-2.5 no-underline group pointer-events-auto">
           <motion.span
             className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/20"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
@@ -116,7 +116,7 @@ function LandingNav() {
             <Link
               key={to}
               to={to}
-              className="relative px-3 py-1.5 text-sm font-medium text-gray-500 no-underline rounded-lg transition-colors hover:text-gray-900 hover:bg-gray-100/60 group"
+              className="relative px-3 py-1.5 text-sm font-medium text-gray-500 no-underline rounded-lg transition-colors hover:text-gray-900 hover:bg-gray-100/60 group pointer-events-auto"
             >
               {label}
               <span className="absolute bottom-0.5 left-3 right-3 h-px bg-gradient-to-r from-blue-500 to-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-full" />
@@ -128,7 +128,7 @@ function LandingNav() {
         <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white no-underline shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 transition-shadow"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white no-underline shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 transition-shadow pointer-events-auto"
             style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
           >
             Go to Dashboard
@@ -210,7 +210,7 @@ function LandingPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col justify-center pointer-events-none [&>*]:pointer-events-auto">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col justify-center pointer-events-none">
           {/* hero content */}
           <div className="max-w-3xl">
               {/* <motion.p
@@ -264,7 +264,7 @@ function LandingPage() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     to="/dashboard"
-                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-sm font-semibold no-underline text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30"
+                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-sm font-semibold no-underline text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30 pointer-events-auto"
                     style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
                   >
                     Launch Platform
@@ -274,7 +274,7 @@ function LandingPage() {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     to="/analyze"
-                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-gray-200 bg-white/60 backdrop-blur-md text-sm font-semibold text-gray-700 no-underline hover:bg-white transition-colors shadow-sm"
+                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-gray-200 bg-white/60 backdrop-blur-md text-sm font-semibold text-gray-700 no-underline hover:bg-white transition-colors shadow-sm pointer-events-auto"
                   >
                     <Sparkles className="w-4 h-4 text-emerald-500" />
                     Try Analysis
@@ -421,7 +421,7 @@ function LandingPage() {
             >
               <Link
                 to="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold no-underline text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/35"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold no-underline text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/35 pointer-events-auto"
                 style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
               >
                 Start Monitoring

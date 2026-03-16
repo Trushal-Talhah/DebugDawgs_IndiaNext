@@ -117,12 +117,20 @@ function ParticleSwarm() {
 
 export default function CyberParticleBackground() {
   return (
-    <div className="absolute inset-0" style={{ zIndex: 0 }}>
+    <div className="absolute inset-0 pointer-events-auto" style={{ zIndex: 0 }}>
       <Canvas
         camera={{ position: [0, 0, 7], fov: 60 }}
         dpr={1}
         gl={{ alpha: true, antialias: false, powerPreference: 'high-performance' }}
-        style={{ background: 'transparent' }}
+        style={{ 
+          background: 'transparent', 
+          pointerEvents: 'auto',
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0
+        }}
       >
         <ParticleSwarm />
       </Canvas>
