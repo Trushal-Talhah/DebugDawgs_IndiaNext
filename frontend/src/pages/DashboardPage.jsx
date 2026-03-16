@@ -70,7 +70,7 @@ function DashboardPage() {
       <StatsOverview stats={stats} isLoading={isLoading} />
 
       {/* Visual Charts */}
-      <DashboardCharts stats={stats} />
+      <DashboardCharts stats={stats} incidents={incidents} />
 
       {/* Recent incidents */}
       {isLoading ? (

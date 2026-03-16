@@ -10,8 +10,8 @@ import {
 } from 'framer-motion';
 import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap } from 'lucide-react';
 import { fadeUp, heroWord, heroWordContainer, staggerContainer } from '../animations/variants';
-import { DASHBOARD_STATS } from '../data/sampleData';
 import CyberParticleBackground from '../components/shared/CyberParticleBackground';
+import { getIncidents, transformIncident } from '../lib/api';
 
 /* ─── data ─── */
 const HERO_WORDS = ['Detect.', 'Explain.', 'Respond.'];
@@ -43,12 +43,7 @@ const FEATURE_CARDS = [
   },
 ];
 
-const STATS = [
-  { label: 'Threats Scanned', value: 18240, suffix: '+' },
-  { label: 'High-Risk Blocked', value: DASHBOARD_STATS.blockedToday, suffix: '' },
-  { label: 'Avg. Triage Time', value: 43, suffix: 's' },
-  { label: 'Analyst Confidence', value: 97, suffix: '%' },
-];
+// Stats will be calculated dynamically from live data
 
 const TESTIMONIALS = [
   '"Reduced phishing triage from minutes to seconds."',
@@ -191,6 +186,47 @@ function GlassCard({ children, className = '', hover = true }) {
 function LandingPage() {
   const ctaRef = useRef(null);
   const ctaInView = useInView(ctaRef, { once: true, margin: '-80px' });
+  
+  const [dashboardStats, setDashboardStats] = useState({
+    threatsToday: 0,
+    highRisk: 0,
+    mediumRisk: 0,
+    lowRisk: 0,
+    blockedToday: 0,
+    pendingReview: 0,
+  });
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDashboardStats() {
+      try {
+        const data = await getIncidents(50);
+        const transformed = data.map(transformIncident);
+        
+        // Calculate stats from real data
+        const today = new Date().toDateString();
+        const todayIncidents = transformed.filter(
+          (inc) => new Date(inc.timestamp).toDateString() === today
+        );
+        
+        setDashboardStats({
+          threatsToday: todayIncidents.length,
+          highRisk: transformed.filter((inc) => inc.risk >= 70).length,
+          mediumRisk: transformed.filter((inc) => inc.risk >= 40 && inc.risk < 70).length,
+          lowRisk: transformed.filter((inc) => inc.risk < 40).length,
+          blockedToday: todayIncidents.filter((inc) => inc.status === 'blocked' || inc.status === 'quarantined').length,
+          pendingReview: transformed.filter((inc) => inc.status === 'flagged').length,
+        });
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats:', err);
+        // Keep default values of 0 if fetch fails
+      } finally {
+        setStatsLoading(false);
+      }
+    }
+    
+    fetchDashboardStats();
+  }, []);
 
   return (
     <div className="min-h-screen text-gray-900 bg-gray-50/50">
@@ -321,7 +357,12 @@ function LandingPage() {
 
         {/* stats counters */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
-          {STATS.map((item) => (
+          {[
+            { label: 'Threats Scanned', value: 18240, suffix: '+' },
+            { label: 'High-Risk Blocked', value: statsLoading ? 0 : dashboardStats.blockedToday, suffix: '' },
+            { label: 'Avg. Triage Time', value: 43, suffix: 's' },
+            { label: 'Analyst Confidence', value: 97, suffix: '%' },
+          ].map((item) => (
             <motion.div
               key={item.label}
               initial={{ y: 40, opacity: 0 }}
@@ -355,18 +396,28 @@ function LandingPage() {
 
               <div className="mt-8 rounded-xl border border-gray-100 bg-white/50 backdrop-blur-sm p-6 shadow-sm">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                  {[
-                    { label: 'Threats Today', value: DASHBOARD_STATS.threatsToday },
-                    { label: 'High Risk', value: DASHBOARD_STATS.highRisk },
-                    { label: 'Medium Risk', value: DASHBOARD_STATS.mediumRisk },
-                    { label: 'Blocked', value: DASHBOARD_STATS.blockedToday },
-                    { label: 'Pending', value: DASHBOARD_STATS.pendingReview },
-                  ].map((item) => (
-                    <div key={item.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
-                      <p className="text-2xl font-bold text-gray-900 leading-none">{item.value}</p>
-                      <p className="text-xs font-semibold text-gray-400 mt-1 uppercase tracking-wider">{item.label}</p>
-                    </div>
-                  ))}
+                  {statsLoading ? (
+                    // Show loading placeholders
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <div key={index} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                        <div className="w-8 h-6 bg-gray-200 rounded animate-pulse" />
+                        <div className="w-16 h-3 bg-gray-200 rounded mt-1 animate-pulse" />
+                      </div>
+                    ))
+                  ) : (
+                    [
+                      { label: 'Threats Today', value: dashboardStats.threatsToday },
+                      { label: 'High Risk', value: dashboardStats.highRisk },
+                      { label: 'Medium Risk', value: dashboardStats.mediumRisk },
+                      { label: 'Blocked', value: dashboardStats.blockedToday },
+                      { label: 'Pending', value: dashboardStats.pendingReview },
+                    ].map((item) => (
+                      <div key={item.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                        <p className="text-2xl font-bold text-gray-900 leading-none">{item.value}</p>
+                        <p className="text-xs font-semibold text-gray-400 mt-1 uppercase tracking-wider">{item.label}</p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
