@@ -57,6 +57,89 @@ const TESTIMONIALS = [
   '"We finally have explainability without dashboard clutter."',
 ];
 
+/* ─── glassmorphism sticky navbar ─── */
+function LandingNav() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <motion.header
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      animate={
+        scrolled
+          ? {
+              backgroundColor: 'rgba(255, 255, 255, 0.75)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              boxShadow: '0 4px 30px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.4) inset',
+              borderBottom: '1px solid rgba(209,213,219,0.5)',
+            }
+          : {
+              backgroundColor: 'rgba(255,255,255,0)',
+              backdropFilter: 'blur(0px)',
+              WebkitBackdropFilter: 'blur(0px)',
+              boxShadow: 'none',
+              borderBottom: '1px solid rgba(0,0,0,0)',
+            }
+      }
+      transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+    >
+      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2.5 no-underline group">
+          <motion.span
+            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/20"
+            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Zap className="w-4 h-4 text-white" />
+          </motion.span>
+          <span className="text-sm font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
+            SentinelAI
+          </span>
+        </Link>
+
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-1">
+          {[
+            { label: 'Dashboard', to: '/dashboard' },
+            { label: 'Analyze', to: '/analyze' },
+            { label: 'Incidents', to: '/incidents' },
+            { label: 'Sandbox', to: '/sandbox' },
+          ].map(({ label, to }) => (
+            <Link
+              key={to}
+              to={to}
+              className="relative px-3 py-1.5 text-sm font-medium text-gray-500 no-underline rounded-lg transition-colors hover:text-gray-900 hover:bg-gray-100/60 group"
+            >
+              {label}
+              <span className="absolute bottom-0.5 left-3 right-3 h-px bg-gradient-to-r from-blue-500 to-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-left rounded-full" />
+            </Link>
+          ))}
+        </nav>
+
+        {/* CTA */}
+        <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold text-white no-underline shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 transition-shadow"
+            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+          >
+            Go to Dashboard
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </motion.div>
+      </div>
+    </motion.header>
+  );
+}
+
 /* ─── animated counter ─── */
 function AnimatedCounter({ value, suffix = '' }) {
   const ref = useRef(null);
@@ -111,9 +194,10 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-gray-50/50">
+      <LandingNav />
 
       {/* ════════════ HERO SECTION ════════════ */}
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative min-h-screen overflow-hidden pt-16">
         {/* 3D Particle Background - It renders behind the glass cards */}
         <CyberParticleBackground />
 
@@ -126,33 +210,10 @@ function LandingPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col pointer-events-none [&>*]:pointer-events-auto">
-          {/* top bar */}
-          <header className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm font-semibold tracking-wide">
-              <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center backdrop-blur">
-                <Zap className="w-4 h-4" />
-              </span>
-              <span className="text-gray-900">SentinelAI</span>
-            </div>
-            <nav className="hidden md:flex items-center gap-7 text-sm text-gray-500 font-medium">
-              <Link to="/dashboard" className="hover:text-gray-900 transition-colors no-underline">Dashboard</Link>
-              <Link to="/analyze" className="hover:text-gray-900 transition-colors no-underline">Analyze</Link>
-              <Link to="/incidents" className="hover:text-gray-900 transition-colors no-underline">Incidents</Link>
-              <Link to="/sandbox" className="hover:text-gray-900 transition-colors no-underline">Sandbox</Link>
-            </nav>
-            <Link
-              to="/dashboard"
-              className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors no-underline"
-            >
-              Go to Dashboard →
-            </Link>
-          </header>
-
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col justify-center pointer-events-none [&>*]:pointer-events-auto">
           {/* hero content */}
-          <div className="flex-1 flex items-center">
-            <div className="max-w-3xl">
-              <motion.p
+          <div className="max-w-3xl">
+              {/* <motion.p
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white/60 backdrop-blur-md text-xs font-semibold text-gray-600 shadow-sm"
                 variants={fadeUp}
                 initial="hidden"
@@ -160,7 +221,7 @@ function LandingPage() {
               >
                 <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                 Explainable Security Intelligence
-              </motion.p>
+              </motion.p> */}
 
               <motion.h1
                 className="mt-6 text-6xl md:text-8xl font-bold leading-[1.1] tracking-tight"
@@ -222,8 +283,7 @@ function LandingPage() {
               </motion.div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* ════════════ GLASSMORPHISM FEATURE CARDS ════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 -mt-20">
