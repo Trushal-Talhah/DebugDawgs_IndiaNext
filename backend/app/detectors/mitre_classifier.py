@@ -4,35 +4,57 @@
 # This file maps their output to MITRE tactic names.
 
 DETECTOR_TO_MITRE = {
-    # From phishing_detector.py
+    # Phishing / Email
     "phishing": "initial-access",
     "spearphishing": "initial-access",
-    
-    # From anomaly_detector.py
-    "anomaly": "discovery",
-    "port_scan": "reconnaissance",
-    "unusual_traffic": "command-and-control",
-    
-    # From ai_content_detector.py
-    "malicious_content": "execution",
-    "prompt_injection": "execution",
-    
-    # From url_analyzer.py
+    "phishing threat": "initial-access",
+
+    # URL
     "malicious_url": "initial-access",
-    "c2_communication": "command-and-control",
-    
-    # From deepfake_detector.py
+    "malicious url": "initial-access",
+    "url threat": "initial-access",
+
+    # AI Content
+    "ai-generated_content": "execution",
+    "ai_generated_content": "execution",
+    "ai generated content": "execution",
+    "ai content": "execution",
+
+    # Prompt Injection
+    "prompt_injection": "execution",
+    "prompt injection": "execution",
+    "prompt injection threat": "execution",
+
+    # Anomaly / Login
+    "anomaly": "discovery",
+    "login anomaly": "discovery",
+    "anomalous login": "discovery",
+    "anomaly threat": "discovery",
+    "port_scan": "reconnaissance",
+    "port scan": "reconnaissance",
+    "unusual_traffic": "command-and-control",
+
+    # Deepfake
     "deepfake": "initial-access",
-    
-    # Generic fallbacks
+    "deepfake threat": "initial-access",
+
+    # Compound — multiple threats = later kill chain stage
+    "compound threat": "privilege-escalation",
+    "compound_threat": "privilege-escalation",
+    "multi-vector threat": "privilege-escalation",
+
+    # Generic malware/intrusion
+    "malware": "execution",
+    "ransomware": "impact",
     "brute_force": "credential-access",
+    "brute force": "credential-access",
     "privilege_escalation": "privilege-escalation",
     "lateral_movement": "lateral-movement",
     "data_exfiltration": "exfiltration",
-    "malware": "execution",
-    "ransomware": "impact"
+    "exfiltration": "exfiltration",
+    "c2": "command-and-control",
+    "command and control": "command-and-control",
 }
-
 TACTIC_ORDER = [
     "reconnaissance", "resource-development", "initial-access",
     "execution", "persistence", "privilege-escalation",
@@ -41,18 +63,21 @@ TACTIC_ORDER = [
     "exfiltration", "impact"
 ]
 
-def map_to_mitre(detector_output: str) -> dict:
-    """
-    Takes whatever your existing detectors return
-    and maps it to a MITRE tactic.
-    """
-    threat_type = detector_output.lower().replace(" ", "_")
-    tactic = DETECTOR_TO_MITRE.get(threat_type, "discovery")
-    stage = TACTIC_ORDER.index(tactic) + 1
+def map_to_mitre(threat_type: str) -> dict:
+    threat_type_clean = threat_type.lower().replace(" ", "_")
+    
+    # If it's an error — return None so UI can handle it
+    if "error" in threat_type_clean or "analysis_error" in threat_type_clean:
+        return None
+    
+    tactic = DETECTOR_TO_MITRE.get(threat_type_clean, None)
+    
+    if not tactic:
+        return None
     
     return {
         "tactic": tactic,
-        "stage": stage,
+        "stage": TACTIC_ORDER.index(tactic) + 1,
         "total_stages": 14,
         "tactic_display": tactic.replace("-", " ").title()
     }

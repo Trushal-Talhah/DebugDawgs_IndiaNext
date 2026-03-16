@@ -197,20 +197,24 @@ async def _run_scan(
     # ── Step 5b: MITRE ATT&CK Prediction ────────────────────────────
     try:
         mitre_data = map_to_mitre(primary_result.get("threat_type", ""))
-        predictions = _chain.predict(mitre_data["tactic"], top_n=3)
-        response.mitre_tactic = mitre_data["tactic"]
-        response.mitre_stage = mitre_data["stage"]
-        response.mitre_predictions = predictions
-        response.mitre_source = {
-            "method": "First-order Markov Chain",
-            "data_source": "MITRE ATT&CK Enterprise CTI Dataset",
-            "campaigns_analysed": _chain.total_campaigns,
-            "methodology_citation": "Sheyner et al. — Automated Generation and Analysis of Attack Graphs, IEEE S&P 2002",
-            "validation": "Wilson Score 95% Confidence Intervals + Chi-square significance testing",
-            "data_url": "https://github.com/mitre/cti",
-            "framework_url": "https://attack.mitre.org",
-            "note": "Probabilities derived from real documented APT campaign sequences. No hardcoded rules."
-        }
+        
+        # Only run prediction if we have a valid tactic
+        if mitre_data:
+            predictions = _chain.predict(mitre_data["tactic"], top_n=3)
+            response.mitre_tactic = mitre_data["tactic"]
+            response.mitre_stage = mitre_data["stage"]
+            response.mitre_predictions = predictions
+            response.mitre_source = {
+                "method": "First-order Markov Chain",
+                "data_source": "MITRE ATT&CK Enterprise CTI Dataset",
+                "campaigns_analysed": _chain.total_campaigns,
+                "methodology_citation": "Sheyner et al. — IEEE S&P 2002",
+                "validation": "Wilson Score 95% CI + Chi-square testing",
+                "data_url": "https://github.com/mitre/cti",
+                "framework_url": "https://attack.mitre.org",
+                "note": "Probabilities derived from real documented APT campaign sequences."
+            }
+        # If error — leave mitre fields as null
     except Exception:
         pass
 
