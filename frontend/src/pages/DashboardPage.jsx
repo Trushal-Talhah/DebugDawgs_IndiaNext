@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ScanSearch } from 'lucide-react';
 import StatsOverview from '../components/dashboard/StatsOverview';
 import RecentIncidents from '../components/dashboard/RecentIncidents';
+import DashboardCharts from '../components/dashboard/DashboardCharts';
 import { getIncidents, transformIncident } from '../lib/api';
 
 function DashboardPage() {
@@ -67,6 +68,9 @@ function DashboardPage() {
 
       {/* Stats */}
       <StatsOverview stats={stats} isLoading={isLoading} />
+
+      {/* Visual Charts */}
+      <DashboardCharts stats={stats} />
 
       {/* Recent incidents */}
       {isLoading ? (

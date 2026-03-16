@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useSimpleMode } from '../hooks/useSimpleMode';
 import AnalyzePanel from '../components/analyze/AnalyzePanel';
 import RiskCard from '../components/analyze/RiskCard';
@@ -6,14 +7,19 @@ import EvidenceTimeline from '../components/analyze/EvidenceTimeline';
 import FeatureImportanceBar from '../components/analyze/FeatureImportanceBar';
 import CounterfactualControl from '../components/analyze/CounterfactualControl';
 import ResponseActions from '../components/analyze/ResponseActions';
+import GmailInbox from '../components/analyze/GmailInbox';
 import { scanThreat, scanImage, transformScanResponse } from '../lib/api';
 
 function AnalyzePage() {
   const { isSimple } = useSimpleMode();
+  const [searchParams] = useSearchParams();
+  const urlType = searchParams.get('type') || 'email';
+  
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showEvidence, setShowEvidence] = useState(false);
+  const [prefillValue, setPrefillValue] = useState('');
   const resultRef = useRef(null);
 
   async function handleAnalyze({ type, input }) {
@@ -26,7 +32,6 @@ function AnalyzePage() {
       const response = await scanThreat(type, input);
       const transformedResult = transformScanResponse(response);
       setResult(transformedResult);
-      // Scroll to result after render
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -48,7 +53,6 @@ function AnalyzePage() {
       const response = await scanImage(file);
       const transformedResult = transformScanResponse(response);
       setResult(transformedResult);
-      // Scroll to result after render
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -61,8 +65,16 @@ function AnalyzePage() {
   }
 
   function handleAction(actionId) {
-    // In a real app, this would call an API
     console.log('Action taken:', actionId);
+  }
+
+  /* When user clicks "Analyze This Email" in GmailInbox */
+  function handleEmailSelected(emailContent) {
+    setPrefillValue(emailContent);
+    // reset it slightly after so re-selecting same email works
+    setTimeout(() => setPrefillValue(''), 200);
+    // Scroll up to the analyze panel
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   return (
@@ -71,17 +83,23 @@ function AnalyzePage() {
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-text">Analyze</h1>
         <p className="text-sm text-muted mt-0.5">
-          Paste an email, URL, prompt, or upload an image to analyze for threats
+          Pick an email from your inbox below or paste content to analyze for threats
         </p>
       </div>
+
+      {/* Gmail Inbox — full width above the grid (Only show if type is email) */}
+      {urlType === 'email' && (
+        <GmailInbox onAnalyzeEmail={handleEmailSelected} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Input */}
         <div>
-          <AnalyzePanel 
-            onAnalyze={handleAnalyze} 
+          <AnalyzePanel
+            onAnalyze={handleAnalyze}
             onAnalyzeImage={handleAnalyzeImage}
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            prefillValue={prefillValue}
           />
         </div>
 
@@ -109,7 +127,6 @@ function AnalyzePage() {
 
           {result && !isLoading && (
             <>
-              {/* Risk card — always visible */}
               <div className="animate-fade-in" aria-live="polite">
                 <RiskCard
                   score={result.score}
@@ -120,7 +137,6 @@ function AnalyzePage() {
                 />
               </div>
 
-              {/* Playbook */}
               <div className="bg-bg rounded-xl border border-border p-5 animate-fade-in">
                 <h3 className="text-base font-semibold text-text mb-3">Recommended Actions</h3>
                 <ol className="space-y-2">
@@ -135,7 +151,6 @@ function AnalyzePage() {
                 </ol>
               </div>
 
-              {/* Evidence section — shown on click or always in advanced mode */}
               {(showEvidence || !isSimple) && (
                 <div className="space-y-4 animate-fade-in">
                   <EvidenceTimeline steps={result.evidenceSteps} />
@@ -156,7 +171,6 @@ function AnalyzePage() {
             </>
           )}
 
-          {/* Empty state */}
           {!result && !isLoading && !error && (
             <div className="bg-bg rounded-xl border border-border p-10 flex flex-col items-center justify-center text-center">
               <div className="w-12 h-12 rounded-2xl bg-panel flex items-center justify-center mb-3">
@@ -166,7 +180,7 @@ function AnalyzePage() {
                 Results will appear here after analysis
               </p>
               <p className="text-xs text-muted mt-1">
-                Try clicking &quot;Load sample&quot; then &quot;Analyze&quot;
+                Pick an email from your inbox above, or click &quot;Load sample&quot; then &quot;Analyze&quot;
               </p>
             </div>
           )}

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Mail, Link, MessageSquare, ChevronDown, FileText, Bot, Image } from 'lucide-react';
 import { SAMPLE_INPUTS } from '../../data/sampleData';
 
@@ -11,12 +12,40 @@ const TYPE_OPTIONS = [
   { value: 'image', label: 'Image (Deepfake)', icon: Image },
 ];
 
-function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false }) {
-  const [type, setType] = useState('email');
+function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillValue = '' }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlType = searchParams.get('type') || 'email';
+  
+  const [type, setType] = useState(urlType);
   const [input, setInput] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  /* ── sync type with URL whenever it changes ── */
+  useEffect(() => {
+    if (urlType !== type) {
+      setType(urlType);
+    }
+  }, [urlType]);
+
+  function handleTypeChange(newType) {
+    setType(newType);
+    setDropdownOpen(false);
+    setSearchParams({ type: newType });
+  }
+
+  /* ── when an email is chosen from GmailInbox, auto-fill and auto-analyze ── */
+  useEffect(() => {
+    if (prefillValue) {
+      setType('email');
+      setSearchParams({ type: 'email' });
+      setInput(prefillValue);
+      setDropdownOpen(false);
+      // Auto-submit
+      onAnalyze({ type: 'email', input: prefillValue });
+    }
+  }, [prefillValue, onAnalyze, setSearchParams]);
 
   const currentType = TYPE_OPTIONS.find((t) => t.value === type);
   const CurrentIcon = currentType.icon;
@@ -88,7 +117,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false }) {
                 type="button"
                 role="option"
                 aria-selected={type === value}
-                onClick={() => { setType(value); setDropdownOpen(false); }}
+                onClick={() => handleTypeChange(value)}
                 className={`flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-panel transition-colors ${
                   type === value ? 'text-accent font-medium' : 'text-text'
                 }`}

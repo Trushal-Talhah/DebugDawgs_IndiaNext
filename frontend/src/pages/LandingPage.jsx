@@ -126,7 +126,7 @@ function LandingPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col pointer-events-none [&>*]:pointer-events-auto">
           {/* top bar */}
           <header className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold tracking-wide">

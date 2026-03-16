@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { GoogleAuthProvider } from 'firebase/auth';
 import {
   auth,
   googleProvider,
@@ -13,18 +14,37 @@ import {
 
 const AuthContext = createContext(null);
 
+const STORAGE_KEY = 'sentinel_gmail_token';
+
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  // OAuth access token for Gmail API (only set for Google sign-in)
+  const [gmailAccessToken, setGmailAccessToken] = useState(
+    () => sessionStorage.getItem(STORAGE_KEY) ?? null
+  );
 
   /* ── listen to firebase auth state ── */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
+      // Clear Gmail token if user signs out
+      if (!user) {
+        setGmailAccessToken(null);
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
     });
     return unsubscribe;
   }, []);
+
+  /* ── store token helper ── */
+  function storeGmailToken(token) {
+    if (token) {
+      sessionStorage.setItem(STORAGE_KEY, token);
+      setGmailAccessToken(token);
+    }
+  }
 
   /* ── email/password sign up ── */
   async function signup(email, password, displayName) {
@@ -40,9 +60,14 @@ export function AuthProvider({ children }) {
     return signInWithEmailAndPassword(auth, email, password);
   }
 
-  /* ── Google OAuth ── */
-  function loginWithGoogle() {
-    return signInWithPopup(auth, googleProvider);
+  /* ── Google OAuth — capture access token for Gmail API ── */
+  async function loginWithGoogle() {
+    const result = await signInWithPopup(auth, googleProvider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    if (credential?.accessToken) {
+      storeGmailToken(credential.accessToken);
+    }
+    return result;
   }
 
   /* ── GitHub OAuth ── */
@@ -51,13 +76,16 @@ export function AuthProvider({ children }) {
   }
 
   /* ── logout ── */
-  function logout() {
-    return signOut(auth);
+  async function logout() {
+    await signOut(auth);
+    setGmailAccessToken(null);
+    sessionStorage.removeItem(STORAGE_KEY);
   }
 
   const value = {
     currentUser,
     loading,
+    gmailAccessToken,
     signup,
     login,
     loginWithGoogle,
