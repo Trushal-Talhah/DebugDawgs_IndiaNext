@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SentinelAI Scanner</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+      </div>
+      <div>
+        <h1>SentinelAI</h1>
+        <p>On-Demand Threat Scanner</p>
+      </div>
+    </div>
+
+    <button id="scanBtn" class="primary-btn">
+      <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Analyze Current Page
+    </button>
+
+    <div id="loader" class="hidden">
+      <div class="spinner"></div>
+      <p>Analyzing context...</p>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultCard" class="glass-card hidden">
+      <div class="result-header">
+        <div id="verdictBadge" class="badge">Safe</div>
+        <div class="score-box">
+          <span id="riskScore" class="score-val">0</span>
+          <span class="score-lbl">Risk</span>
+        </div>
+      </div>
+      
+      <div class="result-body">
+        <p class="section-title">Analysis Summary</p>
+        <p id="explanationText" class="evidence-text">No threats detected on this page.</p>
+
+        <div class="confidence-bar-wrap mt">
+          <div class="flex-between">
+            <span class="bar-lbl">AI Confidence</span>
+            <span id="confText" class="bar-lbl bold">95%</span>
+          </div>
+          <div class="progress-bg">
+            <div id="confBar" class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="errorMsg" class="error-box hidden"></div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
