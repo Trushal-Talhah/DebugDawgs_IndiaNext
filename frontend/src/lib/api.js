@@ -90,6 +90,52 @@ export async function scanImage(file) {
 }
 
 /**
+ * Scan video for deepfake detection
+ * POST /api/scan/video
+ */
+export async function scanVideo(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `${API_BASE_URL}/scan/video`;
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Video scan failed' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Scan audio for deepfake voice detection
+ * POST /api/scan/audio
+ */
+export async function scanAudio(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `${API_BASE_URL}/scan/audio`;
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Audio scan failed' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
  * Get all incidents
  * GET /api/incidents
  */
