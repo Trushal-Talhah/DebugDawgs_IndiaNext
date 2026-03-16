@@ -36,17 +36,21 @@ def extract_urls_from_text(text: str) -> str:
 @tool
 def analyze_url(url: str) -> str:
     """Analyze a single URL for malicious indicators: suspicious TLD, IP domain, phishing keywords, excessive subdomains, redirect chains."""
-    features = url_analyzer.extract_url_features(url.strip())
+    features   = url_analyzer.extract_url_features(url.strip())
     risk_score, feature_weights, signals = url_analyzer.compute_url_risk_score(features)
     highlights = url_analyzer.get_url_highlights(url, features)
+    confidence = url_analyzer.compute_url_confidence(signals, risk_score)
     return json.dumps({
-        "url": url,
-        "risk_score": round(risk_score, 1),
-        "signals": signals,
-        "feature_weights": feature_weights,
+        "url"               : url,
+        "risk_score"        : round(risk_score, 1),
+        "confidence"        : round(confidence, 1),
+        "signals"           : signals,
+        "feature_weights"   : feature_weights,
         "highlighted_segments": highlights,
-        "threat_type": "Malicious URL"
+        "threat_type"       : "Malicious URL",
+        "scored_by"         : "ml_model" if url_analyzer._model_ok else "heuristic",
     })
+
 
 
 @tool
