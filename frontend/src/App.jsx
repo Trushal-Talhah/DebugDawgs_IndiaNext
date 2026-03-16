@@ -3,7 +3,6 @@ import Layout from './components/layout/Layout';
 import DashboardPage from './pages/DashboardPage';
 import AnalyzePage from './pages/AnalyzePage';
 import IncidentsPage from './pages/IncidentsPage';
-import SandboxPage from './pages/SandboxPage';
 import SettingsPage from './pages/SettingsPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
@@ -40,7 +39,6 @@ function AppRoutes() {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="analyze" element={<AnalyzePage />} />
           <Route path="incidents" element={<IncidentsPage />} />
-          <Route path="sandbox" element={<SandboxPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
