@@ -22,14 +22,14 @@ function AnalyzePage() {
   const [prefillValue, setPrefillValue] = useState('');
   const resultRef = useRef(null);
 
-  async function handleAnalyze({ type, input }) {
+  async function handleAnalyze({ mode, type, input }) {
     setIsLoading(true);
     setResult(null);
     setError(null);
     setShowEvidence(false);
 
     try {
-      const response = await scanThreat(type, input);
+      const response = await scanThreat({ mode, inputType: type, content: input });
       const transformedResult = transformScanResponse(response);
       setResult(transformedResult);
       setTimeout(() => {
@@ -149,6 +149,13 @@ function AnalyzePage() {
                     </li>
                   ))}
                 </ol>
+              </div>
+
+              <div className="bg-bg rounded-xl border border-border p-5 animate-fade-in">
+                <h3 className="text-base font-semibold text-text mb-3">Full API Response</h3>
+                <pre className="text-xs text-text bg-panel border border-border rounded-lg p-3 overflow-auto max-h-80">
+                  {JSON.stringify(result.rawResponse, null, 2)}
+                </pre>
               </div>
 
               {(showEvidence || !isSimple) && (

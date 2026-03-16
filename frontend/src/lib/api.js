@@ -27,17 +27,43 @@ async function apiFetch(endpoint, options = {}) {
 }
 
 /**
- * Scan text content for threats (email, URL, prompt, login_log, ai_text)
+ * Auto-scan any text content for threats
  * POST /api/scan
+ * Backend now auto-classifies input type.
  */
-export async function scanThreat(inputType, content) {
+export async function scanThreatAuto(content) {
   return apiFetch('/scan', {
     method: 'POST',
     body: JSON.stringify({
-      input_type: inputType,
-      content: content,
+      input: content,
     }),
   });
+}
+
+/**
+ * Typed scan with explicit input type
+ * POST /api/scan/typed
+ */
+export async function scanThreatTyped(inputType, content) {
+  return apiFetch('/scan/typed', {
+    method: 'POST',
+    body: JSON.stringify({
+      input_type: inputType,
+      content,
+    }),
+  });
+}
+
+/**
+ * Unified scan helper
+ * mode=auto -> /scan
+ * mode=typed -> /scan/typed
+ */
+export async function scanThreat({ mode = 'auto', inputType = 'email', content }) {
+  if (mode === 'typed') {
+    return scanThreatTyped(inputType, content);
+  }
+  return scanThreatAuto(content);
 }
 
 /**
@@ -92,42 +118,50 @@ export async function healthCheck() {
  * Maps backend field names to what the UI components expect
  */
 export function transformScanResponse(backendResponse) {
+  const signals = backendResponse.signals || [];
+  const featureWeights = backendResponse.feature_weights || [];
+  const highlightedSegments = backendResponse.highlighted_segments || [];
+  const recommendations = backendResponse.recommendations || [];
+  const riskScore = Number(backendResponse.risk_score || 0);
+  const confidence = Number(backendResponse.confidence || 0);
+
   return {
     scanId: backendResponse.scan_id,
     inputType: backendResponse.input_type,
     threatType: backendResponse.threat_type,
     verdict: backendResponse.verdict,
-    score: Math.round(backendResponse.risk_score),
-    confidence: Math.round(backendResponse.confidence),
-    label: getVerdictLabel(backendResponse.verdict, backendResponse.risk_score),
+    score: Math.round(riskScore),
+    confidence: Math.round(confidence),
+    label: getVerdictLabel(backendResponse.verdict, riskScore),
     topReason: backendResponse.explanation,
     
     // Map signals to evidence steps
-    evidenceSteps: backendResponse.signals.map((signal, index) => ({
+    evidenceSteps: signals.map((signal, index) => ({
       id: index + 1,
       title: `Signal ${index + 1}`,
       summary: signal,
       raw: signal,
-      severity: getSeverityFromScore(backendResponse.risk_score),
+      severity: getSeverityFromScore(riskScore),
     })),
     
     // Map feature_weights to features format
-    features: backendResponse.feature_weights.map((fw) => ({
+    features: featureWeights.map((fw) => ({
       label: fw.feature,
       value: Math.round(fw.weight * 100),
       color: getColorFromWeight(fw.weight),
     })),
     
     // Counterfactuals (generated from highlighted_segments)
-    counterfactuals: backendResponse.highlighted_segments.map((segment, index) => ({
+    counterfactuals: highlightedSegments.map((segment, index) => ({
       id: `cf-${index}`,
       label: `Remove: "${segment.substring(0, 30)}${segment.length > 30 ? '...' : ''}"`,
-      newScore: Math.max(0, Math.round(backendResponse.risk_score * 0.7)),
+      newScore: Math.max(0, Math.round(riskScore * 0.7)),
     })),
     
     // Recommendations as playbook
-    playbook: backendResponse.recommendations,
-    
+    playbook: recommendations,
+
+    rawResponse: backendResponse,
     timestamp: backendResponse.timestamp,
   };
 }
