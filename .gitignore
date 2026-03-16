@@ -1,0 +1,148 @@
+# ============================================================
+#  CyberSentinel — .gitignore
+#  Place this at: cyber-defense-platform/.gitignore
+# ============================================================
+
+
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.pyo
+
+# ── Virtual Environments ─────────────────────────────────────
+venv/
+.venv/
+env/
+.env/
+ENV/
+backend/venv/
+backend/.venv/
+
+# ── Distribution / Build ─────────────────────────────────────
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ── Environment Variables (CRITICAL — never commit secrets) ──
+.env
+.env.local
+.env.production
+.env.staging
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# ── Runtime Data ─────────────────────────────────────────────
+backend/data/incidents.json
+backend/data/*.json
+# .gitkeep stays tracked (keeps the data/ folder in repo)
+!backend/data/.gitkeep
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+backend/logs/
+
+# ── Testing / Coverage ───────────────────────────────────────
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# ── Type Checking ────────────────────────────────────────────
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# ── Jupyter ──────────────────────────────────────────────────
+.ipynb_checkpoints
+*.ipynb
+
+# ── Frontend — Node / React ──────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/coverage/
+frontend/.parcel-cache/
+*.tsbuildinfo
+
+# ── Frontend — Package lock (keep package-lock.json tracked) ─
+# Uncomment below only if you want to ignore lock file
+# frontend/package-lock.json
+
+# ── Docker ───────────────────────────────────────────────────
+.dockerignore
+docker-compose.override.yml
+
+# ── EC2 / SSH / Deployment ───────────────────────────────────
+*.pem
+*.key
+*.crt
+*.cer
+deploy/
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+
+# ── OS — macOS ───────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# ── OS — Windows ─────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+*.stackdump
+
+# ── OS — Linux ───────────────────────────────────────────────
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ── IDE — VS Code ────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.history/
+
+# ── IDE — PyCharm / JetBrains ────────────────────────────────
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# ── IDE — Cursor ─────────────────────────────────────────────
+.cursor/
+
+# ── Misc ─────────────────────────────────────────────────────
+*.bak
+*.tmp
+*.swp
+*.swo
+.python-version
