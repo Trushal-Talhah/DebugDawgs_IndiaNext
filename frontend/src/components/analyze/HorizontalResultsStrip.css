@@ -159,6 +159,7 @@
 .hrs-card--risk { border-left: 3px solid #dc2626; }
 .hrs-card--stats { border-left: 3px solid #2563eb; }
 .hrs-card--intel { border-left: 3px solid #7c3aed; }
+.hrs-card--mitre { border-left: 3px solid #f97316; }
 .hrs-card--actions { border-left: 3px solid #059669; }
 .hrs-card--signals { border-left: 3px solid #f59e0b; }
 .hrs-card--segments { border-left: 3px solid #ec4899; }

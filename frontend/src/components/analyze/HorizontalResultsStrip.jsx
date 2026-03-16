@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldAlert, ShieldCheck, ShieldQuestion,
   BarChart3, Brain, ListChecks, Radio, Crosshair,
-  ChevronLeft, ChevronRight, ArrowRight,
+  ChevronLeft, ChevronRight, ArrowRight, Network,
 } from 'lucide-react';
 import { useSimpleMode } from '../../hooks/useSimpleMode';
 import './HorizontalResultsStrip.css';
@@ -100,6 +100,9 @@ export default function HorizontalResultsStrip({
 
   // 3 — Threat Intelligence
   cards.push('intel');
+
+  // 3.5 — MITRE ATT&CK
+  if (result.mitrePredictions?.length) cards.push('mitre');
 
   // 4 — Recommended Actions
   if (result.playbook?.length) cards.push('actions');
@@ -299,6 +302,38 @@ export default function HorizontalResultsStrip({
                   </div>
                 ))}
               </div>
+            )}
+          </StripCard>
+        );
+
+      /* ──── 3.5. MITRE ATT&CK ──── */
+      case 'mitre':
+        return (
+          <StripCard index={index} accent="mitre" title="MITRE ATT&CK® Prediction" icon={Network}>
+            <div className="mb-3 border-b border-border pb-2">
+              <span className="text-[10px] uppercase font-bold text-muted tracking-wider">Current Tactic</span>
+              <p className="text-sm font-semibold text-text mt-0.5" style={{ wordBreak: 'break-word' }}>
+                {result.mitreTactic} <span className="text-xs font-normal text-muted">(Stage {result.mitreStage}/14)</span>
+              </p>
+            </div>
+            <p className="text-[10px] uppercase font-bold text-muted tracking-wider mb-2">Predicted Next Steps</p>
+            <div className="space-y-2">
+              {result.mitrePredictions.map((pred, pIdx) => (
+                <div key={pIdx} className="bg-panel rounded p-2">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-[11px] font-medium text-text">{pred.next_tactic}</span>
+                    <span className="text-[11px] font-bold text-accent">{(pred.probability * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="hrs-module-bar-bg h-1.5">
+                    <div className="hrs-module-bar-fill" style={{ width: `${pred.probability * 100}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {result.mitreSource && (
+              <p className="text-[9px] text-muted mt-3 text-center opacity-70">
+                Data: {result.mitreSource.data_source}
+              </p>
             )}
           </StripCard>
         );

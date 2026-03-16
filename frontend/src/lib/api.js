@@ -195,6 +195,12 @@ export function transformScanResponse(backendResponse) {
     // Recommendations as playbook
     playbook,
 
+    // MITRE ATT&CK Tracking
+    mitreTactic: backendResponse.mitre_tactic || null,
+    mitreStage: backendResponse.mitre_stage || null,
+    mitrePredictions: backendResponse.mitre_predictions || null,
+    mitreSource: backendResponse.mitre_source || null,
+
     rawResponse: backendResponse,
     timestamp: backendResponse.timestamp,
   };

@@ -10,6 +10,20 @@ from app.agent.threat_agent import analyze
 from app.storage.incident_store import save_incident
 from app.services.input_classifier import classify_input
 from app.agent.fusion_engine import compute_fusion
+import os
+from app.detectors.mitre_classifier import map_to_mitre
+from app.services.mitre_predictor import MITREMarkovChain
+
+_chain = MITREMarkovChain()
+_weights_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    '../../../data/mitre_weights.json'
+)
+try:
+    _chain.load(_weights_path)
+    print("MITRE prediction engine ready")
+except Exception as e:
+    print(f"MITRE weights not loaded: {e}")
 
 # ── Raw detector imports (zero LLM calls) ────────────────────────────────────
 from app.detectors.url_analyzer import (
@@ -179,6 +193,26 @@ async def _run_scan(
         detector_results=detector_results,
         timestamp=timestamp,
     )
+
+    # ── Step 5b: MITRE ATT&CK Prediction ────────────────────────────
+    try:
+        mitre_data = map_to_mitre(primary_result.get("threat_type", ""))
+        predictions = _chain.predict(mitre_data["tactic"], top_n=3)
+        response.mitre_tactic = mitre_data["tactic"]
+        response.mitre_stage = mitre_data["stage"]
+        response.mitre_predictions = predictions
+        response.mitre_source = {
+            "method": "First-order Markov Chain",
+            "data_source": "MITRE ATT&CK Enterprise CTI Dataset",
+            "campaigns_analysed": _chain.total_campaigns,
+            "methodology_citation": "Sheyner et al. — Automated Generation and Analysis of Attack Graphs, IEEE S&P 2002",
+            "validation": "Wilson Score 95% Confidence Intervals + Chi-square significance testing",
+            "data_url": "https://github.com/mitre/cti",
+            "framework_url": "https://attack.mitre.org",
+            "note": "Probabilities derived from real documented APT campaign sequences. No hardcoded rules."
+        }
+    except Exception:
+        pass
 
     # ── Step 6: Save incident ────────────────────────────────────────────────
     incident_data = {
