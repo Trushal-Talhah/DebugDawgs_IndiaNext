@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.api.routes import scan, scan_image, incidents
 from app.api.prediction_routes import router as prediction_router
-
+from app.api.routes import scan, scan_image, scan_video, scan_audio, incidents
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,7 +38,8 @@ app.include_router(scan.router, prefix="/api", tags=["Threat Scan — Text"])
 app.include_router(scan_image.router, prefix="/api", tags=["Threat Scan — Image (Deepfake)"])
 app.include_router(incidents.router, prefix="/api", tags=["Incident Log"])
 app.include_router(prediction_router)
-
+app.include_router(scan_video.router, prefix="/api", tags=["Threat Scan — Video (Deepfake)"])
+app.include_router(scan_audio.router, prefix="/api", tags=["Threat Scan — Audio (Voice Clone)"])
 @app.get("/api/health", tags=["Health"])
 async def health():
     return {
