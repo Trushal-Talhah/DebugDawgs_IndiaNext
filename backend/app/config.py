@@ -6,7 +6,11 @@ class Settings(BaseSettings):
     NVIDIA_API_KEY: str = ""
     HF_API_KEY: str = ""
     LLM_PROVIDER: str = "groq"
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000", 
+        "http://localhost:5173",
+        "chrome-extension://eiiogncpmkfbjmbofdjdndfalalbfnal"
+    ]
     INCIDENTS_FILE: str = "data/incidents.json"
 
     class Config:
