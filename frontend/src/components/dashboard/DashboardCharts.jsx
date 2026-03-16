@@ -15,16 +15,6 @@ const C = {
 };
 
 /* ── data ── */
-const TREND_DATA = [
-  { day: 'Mon', threats: 6,  blocked: 4, flagged: 2 },
-  { day: 'Tue', threats: 9,  blocked: 7, flagged: 2 },
-  { day: 'Wed', threats: 4,  blocked: 3, flagged: 1 },
-  { day: 'Thu', threats: 12, blocked: 9, flagged: 3 },
-  { day: 'Fri', threats: 7,  blocked: 5, flagged: 2 },
-  { day: 'Sat', threats: 3,  blocked: 2, flagged: 1 },
-  { day: 'Sun', threats: 8,  blocked: 6, flagged: 2 },
-];
-
 const TYPE_DATA = [
   { name: 'Email',    value: 42, color: C.blue },
   { name: 'URL',      value: 28, color: C.purple },
@@ -143,10 +133,59 @@ function ChartCard({ title, subtitle, children, className = '' }) {
 }
 
 
+/* ── Helper function to generate trend data from incidents ── */
+function generateTrendData(incidents) {
+  if (!incidents || !Array.isArray(incidents)) {
+    return [];
+  }
+  
+  // Get current date (today is Monday, March 16, 2026)
+  const today = new Date();
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  // Create array for last 7 days (including today)
+  const trendData = [];
+  
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dayName = days[date.getDay()];
+    
+    // Filter incidents for this specific date
+    const dateStr = date.toDateString();
+    const dayIncidents = incidents.filter(inc => {
+      try {
+        const incDate = new Date(inc.timestamp);
+        return incDate.toDateString() === dateStr;
+      } catch {
+        return false;
+      }
+    });
+    
+    // Calculate metrics for this day
+    const threats = dayIncidents.length;
+    const blocked = dayIncidents.filter(inc => 
+      inc.status === 'blocked' || inc.status === 'quarantined'
+    ).length;
+    const flagged = dayIncidents.filter(inc => 
+      inc.status === 'flagged'
+    ).length;
+    
+    trendData.push({
+      day: dayName,
+      threats,
+      blocked,
+      flagged
+    });
+  }
+  
+  return trendData;
+}
+
 /* ══════════════════════════════════════
    DashboardCharts
    ══════════════════════════════════════ */
-function DashboardCharts({ stats }) {
+function DashboardCharts({ stats, incidents = [] }) {
   const total = TYPE_DATA.reduce((s, d) => s + d.value, 0);
 
   const RISK_DATA = [
@@ -155,6 +194,20 @@ function DashboardCharts({ stats }) {
     { name: 'Low Risk',    value: stats?.lowRisk    || 3, color: C.green },
   ];
   const riskTotal = RISK_DATA.reduce((s, d) => s + d.value, 0);
+  
+  // Generate dynamic trend data from real incidents
+  const trendData = generateTrendData(incidents);
+  
+  // Fallback data if no incidents or empty data
+  const chartData = trendData.length > 0 ? trendData : [
+    { day: 'Mon', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Tue', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Wed', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Thu', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Fri', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Sat', threats: 0, blocked: 0, flagged: 0 },
+    { day: 'Sun', threats: 0, blocked: 0, flagged: 0 },
+  ];
 
   return (
     <div className="space-y-5">
@@ -165,7 +218,7 @@ function DashboardCharts({ stats }) {
         subtitle="Detected threats, blocked actions, and flagged reviews per day"
       >
         <ResponsiveContainer width="100%" height={220}>
-          <AreaChart data={TREND_DATA} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+          <AreaChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
             <defs>
               {[['gThreats', C.blue], ['gBlocked', C.red], ['gFlagged', C.amber]].map(([id, clr]) => (
                 <linearGradient key={id} id={id} x1="0" y1="0" x2="0" y2="1">

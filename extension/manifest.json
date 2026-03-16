@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "SentinelAI - Threat Scanner",
+  "version": "1.0",
+  "description": "Scan the current page for threats (Phishing, Malicious Prompts, Deepfakes) using SentinelAI.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Analyze with SentinelAI"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:8000;"
+  }
+}

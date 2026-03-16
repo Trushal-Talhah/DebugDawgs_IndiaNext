@@ -1,0 +1,16 @@
+{
+  "short_name": "SentinelAI",
+  "name": "SentinelAI Threat Analysis Platform",
+  "description": "AI-powered cyber defense and threat analysis platform.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#f8fafc"
+}
