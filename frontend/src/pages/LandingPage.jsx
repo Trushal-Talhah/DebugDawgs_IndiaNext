@@ -87,14 +87,13 @@ function LandingNav() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 no-underline group pointer-events-auto">
-          <motion.span
-            className="w-8 h-8 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/20"
-            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
+          <motion.img
+            src="/logo.png"
+            alt="SentinelAI Logo"
+            className="w-8 h-8 rounded-lg shadow-md shadow-blue-500/20 object-contain"
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-          >
-            <Zap className="w-4 h-4 text-white" />
-          </motion.span>
+          />
           <span className="text-sm font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
             SentinelAI
           </span>

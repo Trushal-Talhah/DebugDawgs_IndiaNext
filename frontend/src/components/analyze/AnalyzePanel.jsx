@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Mail, Link, MessageSquare, ChevronDown, FileText, Bot, Image } from 'lucide-react';
+import { Mail, ScanSearch, ChevronDown, Image } from 'lucide-react';
 import { SAMPLE_INPUTS } from '../../data/sampleData';
 
 const TYPE_OPTIONS = [
   { value: 'email', label: 'Email', icon: Mail },
-  { value: 'url', label: 'URL', icon: Link },
-  { value: 'prompt', label: 'Prompt', icon: MessageSquare },
-  { value: 'login_log', label: 'Login Log', icon: FileText },
-  { value: 'ai_text', label: 'AI Text', icon: Bot },
-  { value: 'image', label: 'Image (Deepfake)', icon: Image },
+  { value: 'general', label: 'General Input', icon: ScanSearch },
+  { value: 'image', label: 'Deepfake Image', icon: Image },
+];
+
+const SCAN_MODE_OPTIONS = [
+  { value: 'auto', label: 'Auto Scan (/scan)' },
+  { value: 'typed', label: 'Typed Scan (/scan/typed)' },
 ];
 
 function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillValue = '' }) {
@@ -17,6 +19,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
   const urlType = searchParams.get('type') || 'email';
   
   const [type, setType] = useState(urlType);
+  const [mode, setMode] = useState('auto');
   const [input, setInput] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -43,7 +46,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
       setInput(prefillValue);
       setDropdownOpen(false);
       // Auto-submit
-      onAnalyze({ type: 'email', input: prefillValue });
+      onAnalyze({ mode: 'auto', type: 'email', input: prefillValue });
     }
   }, [prefillValue, onAnalyze, setSearchParams]);
 
@@ -82,7 +85,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
       onAnalyzeImage?.(imageFile);
     } else {
       if (!input.trim()) return;
-      onAnalyze({ type, input: input.trim() });
+      onAnalyze({ mode, type, input: input.trim() });
     }
   }
 
@@ -91,6 +94,33 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-text">Analyze Input</h2>
       </div>
+
+      {/* Scan mode selector */}
+      {!isImageMode && (
+        <div className="mb-3">
+          <label className="block text-xs font-medium text-muted mb-1.5" id="scan-mode-label">
+            Scan Mode
+          </label>
+          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="scan-mode-label">
+            {SCAN_MODE_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                role="radio"
+                aria-checked={mode === option.value}
+                onClick={() => setMode(option.value)}
+                className={`px-3 py-2 text-xs rounded-lg border transition-colors ${
+                  mode === option.value
+                    ? 'border-accent text-accent bg-accent-light font-medium'
+                    : 'border-border text-muted hover:border-accent/40'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Type selector */}
       <div className="relative mb-3">

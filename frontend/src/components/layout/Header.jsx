@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Bell, Shield, X, LogOut, UserPlus, ChevronDown } from 'lucide-react';
+import { Search, Bell, X, LogOut, UserPlus, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../logo.png';
 
 function Header() {
   const { currentUser, logout, loginWithGoogle, loginWithGitHub } = useAuth();
@@ -55,11 +56,10 @@ function Header() {
 
   return (
     <header className="h-14 border-b border-border bg-bg flex items-center justify-between px-4 shrink-0">
-      {/* Left: Logo */}
-      <Link to="/" className="flex items-center gap-2 text-text no-underline">
-        <Shield className="w-5 h-5 text-accent" strokeWidth={2.5} />
-        <span className="font-semibold text-base tracking-tight">SentinelAI</span>
-      </Link>
+        {/* Left: Logo */}
+        <Link to="/" className="flex items-center text-text no-underline">
+          <img src={logo} alt="SentinelAI" className="h-6 w-auto" />
+        </Link>
 
       {/* Center: Search */}
       <div className="flex-1 max-w-md mx-8">
