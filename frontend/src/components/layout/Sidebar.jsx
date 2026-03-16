@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   ScanSearch,
-  FlaskConical,
   ShieldAlert,
   Settings,
   PanelLeftClose,
@@ -33,7 +32,6 @@ const NAV_ITEMS = [
       { to: '/analyze?type=ai_text', label: 'AI Text', icon: Bot },
     ]
   },
-  { to: '/sandbox', icon: FlaskConical, label: 'Sandbox' },
   { to: '/incidents', icon: ShieldAlert, label: 'Incidents' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];

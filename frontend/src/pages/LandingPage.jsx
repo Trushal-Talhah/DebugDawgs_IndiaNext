@@ -106,7 +106,6 @@ function LandingNav() {
             { label: 'Dashboard', to: '/dashboard' },
             { label: 'Analyze', to: '/analyze' },
             { label: 'Incidents', to: '/incidents' },
-            { label: 'Sandbox', to: '/sandbox' },
           ].map(({ label, to }) => (
             <Link
               key={to}
