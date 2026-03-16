@@ -33,11 +33,11 @@ function DashboardPage() {
 
         setStats({
           threatsToday: todayIncidents.length,
-          highRisk: transformed.filter((inc) => inc.risk >= 70).length,
-          mediumRisk: transformed.filter((inc) => inc.risk >= 40 && inc.risk < 70).length,
-          lowRisk: transformed.filter((inc) => inc.risk < 40).length,
+          highRisk: todayIncidents.filter((inc) => inc.risk >= 70).length,
+          mediumRisk: todayIncidents.filter((inc) => inc.risk >= 40 && inc.risk < 70).length,
+          lowRisk: todayIncidents.filter((inc) => inc.risk < 40).length,
           blockedToday: todayIncidents.filter((inc) => inc.status === 'blocked' || inc.status === 'quarantined').length,
-          pendingReview: transformed.filter((inc) => inc.status === 'flagged').length,
+          pendingReview: todayIncidents.filter((inc) => inc.status === 'flagged').length,
         });
       } catch (err) {
         console.error('Failed to fetch dashboard data:', err);
@@ -70,7 +70,7 @@ function DashboardPage() {
       <StatsOverview stats={stats} isLoading={isLoading} />
 
       {/* Visual Charts */}
-      <DashboardCharts stats={stats} />
+      <DashboardCharts stats={stats} incidents={incidents} />
 
       {/* Recent incidents */}
       {isLoading ? (
