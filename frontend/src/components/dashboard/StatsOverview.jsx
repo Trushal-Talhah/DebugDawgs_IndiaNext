@@ -8,7 +8,7 @@ const STAT_CARDS = [
   { key: 'pendingReview', label: 'Pending Review', icon: Clock, color: 'text-accent', bg: 'bg-accent-light' },
 ];
 
-function StatsOverview({ stats }) {
+function StatsOverview({ stats, isLoading = false }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" role="region" aria-label="Threat statistics">
       {STAT_CARDS.map(({ key, label, icon: Icon, color, bg }) => (
@@ -20,7 +20,11 @@ function StatsOverview({ stats }) {
             <Icon className={`w-4 h-4 ${color}`} />
           </div>
           <div>
-            <p className="text-2xl font-bold text-text leading-none">{stats[key] ?? 0}</p>
+            {isLoading ? (
+              <div className="w-8 h-6 bg-panel rounded animate-pulse" />
+            ) : (
+              <p className="text-2xl font-bold text-text leading-none">{stats[key] ?? 0}</p>
+            )}
             <p className="text-xs text-muted mt-1">{label}</p>
           </div>
         </div>

@@ -1,15 +1,36 @@
-import { useState } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Filter, RefreshCw } from 'lucide-react';
 import RecentIncidents from '../components/dashboard/RecentIncidents';
-import { SAMPLE_INCIDENTS } from '../data/sampleData';
+import { getIncidents, transformIncident } from '../lib/api';
 
 const FILTER_OPTIONS = ['all', 'quarantined', 'blocked', 'flagged', 'cleared'];
 
 function IncidentsPage() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [incidents, setIncidents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filtered = SAMPLE_INCIDENTS.filter((inc) => {
+  async function fetchIncidents() {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getIncidents(100);
+      setIncidents(data.map(transformIncident));
+    } catch (err) {
+      setError(err.message || 'Failed to load incidents');
+      console.error('Failed to fetch incidents:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchIncidents();
+  }, []);
+
+  const filtered = incidents.filter((inc) => {
     const matchesFilter = filter === 'all' || inc.status === filter;
     const matchesSearch =
       !search ||
@@ -21,9 +42,19 @@ function IncidentsPage() {
   return (
     <div className="space-y-5 animate-fade-in">
       {/* Page header */}
-      <div>
-        <h1 className="text-xl font-semibold text-text">Incidents</h1>
-        <p className="text-sm text-muted mt-0.5">All detected threats and their current status</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-text">Incidents</h1>
+          <p className="text-sm text-muted mt-0.5">All detected threats and their current status</p>
+        </div>
+        <button
+          onClick={fetchIncidents}
+          disabled={isLoading}
+          className="flex items-center gap-2 px-3 py-2 text-sm text-muted hover:text-text border border-border rounded-lg hover:bg-panel transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
       </div>
 
       {/* Toolbar */}
@@ -61,13 +92,39 @@ function IncidentsPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <RecentIncidents incidents={filtered} />
+      {/* Error state */}
+      {error && (
+        <div className="bg-danger-light rounded-xl border border-danger/20 p-5">
+          <p className="text-sm text-danger font-medium">Failed to load incidents</p>
+          <p className="text-sm text-danger/80 mt-1">{error}</p>
+          <button
+            onClick={fetchIncidents}
+            className="mt-3 text-xs text-danger hover:text-danger/80 font-medium"
+          >
+            Try again
+          </button>
+        </div>
+      )}
 
-      {/* Count */}
-      <p className="text-xs text-muted text-right">
-        Showing {filtered.length} of {SAMPLE_INCIDENTS.length} incidents
-      </p>
+      {/* Loading state */}
+      {isLoading && !error && (
+        <div className="bg-bg rounded-xl border border-border p-10 flex flex-col items-center justify-center gap-3">
+          <div className="w-8 h-8 border-3 border-accent/20 border-t-accent rounded-full animate-spin" />
+          <p className="text-sm text-muted">Loading incidents...</p>
+        </div>
+      )}
+
+      {/* Table */}
+      {!isLoading && !error && (
+        <>
+          <RecentIncidents incidents={filtered} />
+
+          {/* Count */}
+          <p className="text-xs text-muted text-right">
+            Showing {filtered.length} of {incidents.length} incidents
+          </p>
+        </>
+      )}
     </div>
   );
 }
