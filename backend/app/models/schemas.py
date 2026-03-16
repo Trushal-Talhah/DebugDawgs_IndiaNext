@@ -48,6 +48,13 @@ class ScanResponse(BaseModel):
 
     timestamp: str
 
+    # ADD these fields to your existing ScanResponse class
+    mitre_tactic: str | None = None
+    mitre_stage: int | None = None
+    mitre_total_stages: int = 14
+    mitre_predictions: list | None = None
+    mitre_source: dict | None = None
+
 
 class DeepfakeScanResponse(BaseModel):
     scan_id: str
@@ -72,3 +79,23 @@ class IncidentSummary(BaseModel):
     risk_score: float
     timestamp: str
     content_preview: str
+
+class ConfidenceInterval(BaseModel):
+    lower: float
+    upper: float
+
+class TacticPrediction(BaseModel):
+    next_tactic: str
+    probability: float
+    observed_in: int
+    out_of_total: int
+    confidence_interval: ConfidenceInterval
+    reliability: str
+
+class PredictionResponse(BaseModel):
+    current_tactic: str
+    tactic_display: str
+    stage: int
+    total_stages: int
+    predictions: List[TacticPrediction]
+    model_info: dict

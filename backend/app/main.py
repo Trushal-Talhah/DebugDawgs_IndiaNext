@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.api.routes import scan, scan_image, incidents
+from app.api.prediction_routes import router as prediction_router
 
 
 @asynccontextmanager
@@ -26,9 +27,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_origin_regex=r"chrome-extension://.*",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_origin_regex=r".*",
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -36,7 +37,7 @@ app.add_middleware(
 app.include_router(scan.router, prefix="/api", tags=["Threat Scan — Text"])
 app.include_router(scan_image.router, prefix="/api", tags=["Threat Scan — Image (Deepfake)"])
 app.include_router(incidents.router, prefix="/api", tags=["Incident Log"])
-
+app.include_router(prediction_router)
 
 @app.get("/api/health", tags=["Health"])
 async def health():

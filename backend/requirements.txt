@@ -45,5 +45,3 @@ python-dateutil==2.9.0
 
 # -- Image Processing (Deepfake endpoint) -----------------------------
 Pillow==11.1.0
-
-shap>=0.44.0
