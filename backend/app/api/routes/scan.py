@@ -192,7 +192,12 @@ async def _run_scan(
     return response
 
 
+
 # ── Route 1: Auto-detect ─────────────────────────────────────────────────────
+
+@router.options("/scan")
+async def options_auto_scan():
+    return {}
 
 @router.post(
     "/scan",
@@ -219,6 +224,7 @@ async def auto_scan(request: AutoScanRequest):
         run_fusion=True,
         classifier_meta=classification,
     )
+
 
 
 # ── Route 2: Legacy typed ────────────────────────────────────────────────────
