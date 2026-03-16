@@ -1,0 +1,47 @@
+# ┌──────────────────────────────────────────────────────────────────┐
+# │  CyberSentinel — requirements.txt                                │
+# │  Python 3.11 | Zero-conflict verified install                    │
+# │                                                                  │
+# │  DO NOT add: pydantic-core, langchain-core,                      │
+# │  langchain-text-splitters — these are auto-resolved correctly    │
+# │  by their parent packages. Pinning them manually causes          │
+# │  version mismatches.                                             │
+# └──────────────────────────────────────────────────────────────────┘
+
+# ── Web Framework ────────────────────────────────────────────────────
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20
+
+# ── Config / Validation ──────────────────────────────────────────────
+python-dotenv==1.0.1
+pydantic==2.10.3
+# pydantic-core is intentionally NOT pinned here.
+# pydantic==2.10.3 declares its exact pydantic-core requirement
+# in its own metadata — pip resolves it automatically and correctly.
+pydantic-settings==2.7.0
+
+# ── LangChain Ecosystem ──────────────────────────────────────────────
+# Keep ALL langchain-* packages in the 0.3.x minor series.
+# Do NOT mix with 1.x versions of any langchain sub-package.
+langchain==0.3.13
+langchain-groq==0.2.3
+langchain-nvidia-ai-endpoints==0.3.10
+# langchain-core and langchain-text-splitters are intentionally NOT
+# pinned here. langchain==0.3.13 pulls the exact compatible versions.
+# Pinning them manually risks sub-version conflicts.
+
+# ── HTTP Clients ─────────────────────────────────────────────────────
+httpx==0.28.1
+requests==2.32.3
+
+# ── URL Analysis ─────────────────────────────────────────────────────
+tldextract==5.1.3
+validators==0.34.0
+
+# ── Numerics / Dates ─────────────────────────────────────────────────
+numpy==1.26.4
+python-dateutil==2.9.0
+
+# ── Image Processing (Deepfake endpoint) ─────────────────────────────
+Pillow==11.1.0
