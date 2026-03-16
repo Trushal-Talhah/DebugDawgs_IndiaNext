@@ -19,6 +19,7 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .hrs-track::-webkit-scrollbar {
   display: none;
 }
@@ -35,13 +36,14 @@
   padding: 24px;
   position: relative;
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   z-index: 1;
 }
+
 .hrs-card:hover {
   transform: translateY(-4px) scale(1.015);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08),
-              0 0 0 1px rgba(37, 99, 235, 0.1);
+    0 0 0 1px rgba(37, 99, 235, 0.1);
 }
 
 /* Card accent stripe */
@@ -57,6 +59,7 @@
   opacity: 0;
   transition: opacity 0.3s;
 }
+
 .hrs-card:hover::before {
   opacity: 1;
 }
@@ -77,9 +80,11 @@
   stroke-dasharray: 6 4;
   animation: hrs-dash-flow 1.2s linear infinite;
 }
+
 .hrs-arrow-head {
   fill: #3b82f6;
 }
+
 .hrs-arrow-glow {
   fill: none;
   stroke: #3b82f6;
@@ -89,7 +94,9 @@
 }
 
 @keyframes hrs-dash-flow {
-  to { stroke-dashoffset: -20; }
+  to {
+    stroke-dashoffset: -20;
+  }
 }
 
 /* Connector pulse dot */
@@ -103,8 +110,19 @@
 }
 
 @keyframes hrs-dot-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
-  50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 12px 4px rgba(59,130,246,0.2); }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: 1;
+    box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.2);
+  }
 }
 
 /* ── Navigation buttons ── */
@@ -126,15 +144,18 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   color: #6b7280;
 }
+
 .hrs-nav-btn:hover {
   background: #ffffff;
   color: #2563eb;
   box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
   border-color: #2563eb;
 }
+
 .hrs-nav-left {
   left: -8px;
 }
+
 .hrs-nav-right {
   right: -8px;
 }
@@ -145,6 +166,7 @@
     opacity: 0;
     transform: translateX(60px) scale(0.92);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -156,14 +178,37 @@
 }
 
 /* ── Card-specific accent colors ── */
-.hrs-card--risk { border-left: 3px solid #dc2626; }
-.hrs-card--stats { border-left: 3px solid #2563eb; }
-.hrs-card--intel { border-left: 3px solid #7c3aed; }
-.hrs-card--mitre { border-left: 3px solid #f97316; }
-.hrs-card--actions { border-left: 3px solid #059669; }
-.hrs-card--signals { border-left: 3px solid #f59e0b; }
-.hrs-card--segments { border-left: 3px solid #ec4899; }
-.hrs-card--evidence { border-left: 3px solid #06b6d4; }
+.hrs-card--risk {
+  border-left: 3px solid #dc2626;
+}
+
+.hrs-card--stats {
+  border-left: 3px solid #2563eb;
+}
+
+.hrs-card--intel {
+  border-left: 3px solid #7c3aed;
+}
+
+.hrs-card--mitre {
+  border-left: 3px solid #f97316;
+}
+
+.hrs-card--actions {
+  border-left: 3px solid #059669;
+}
+
+.hrs-card--signals {
+  border-left: 3px solid #f59e0b;
+}
+
+.hrs-card--segments {
+  border-left: 3px solid #ec4899;
+}
+
+.hrs-card--evidence {
+  border-left: 3px solid #06b6d4;
+}
 
 /* ── Scroll dots ── */
 .hrs-dots {
@@ -172,6 +217,7 @@
   gap: 6px;
   margin-top: 16px;
 }
+
 .hrs-dot {
   width: 8px;
   height: 8px;
@@ -181,6 +227,7 @@
   cursor: pointer;
   transition: all 0.25s;
 }
+
 .hrs-dot--active {
   background: #2563eb;
   width: 24px;
@@ -199,6 +246,7 @@
   align-items: center;
   gap: 8px;
 }
+
 .hrs-card-title svg {
   width: 16px;
   height: 16px;
@@ -210,14 +258,17 @@
   height: 80px;
   margin: 0 auto 12px;
 }
+
 .hrs-score-ring circle {
   fill: none;
   stroke-width: 6;
   stroke-linecap: round;
 }
+
 .hrs-score-ring .ring-bg {
   stroke: #f3f4f6;
 }
+
 .hrs-score-ring .ring-fill {
   stroke: currentColor;
   stroke-dasharray: 226;
@@ -230,12 +281,14 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+
 .hrs-stat-item {
   background: #f7f8fa;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   padding: 10px;
 }
+
 .hrs-stat-label {
   font-size: 10px;
   text-transform: uppercase;
@@ -243,6 +296,7 @@
   color: #6b7280;
   margin-bottom: 2px;
 }
+
 .hrs-stat-value {
   font-size: 16px;
   font-weight: 700;
@@ -256,6 +310,7 @@
   background: #f3f4f6;
   overflow: hidden;
 }
+
 .hrs-module-bar-fill {
   height: 100%;
   border-radius: 3px;
@@ -276,6 +331,7 @@
   color: #111827;
   line-height: 1.5;
 }
+
 .hrs-playbook-num {
   width: 22px;
   height: 22px;
@@ -313,9 +369,11 @@
   padding: 6px 0;
   border-bottom: 1px solid #f3f4f6;
 }
+
 .hrs-signal-item:last-child {
   border-bottom: none;
 }
+
 .hrs-signal-dot {
   width: 6px;
   height: 6px;

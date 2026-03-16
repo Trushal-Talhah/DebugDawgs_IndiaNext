@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
+import ChatBot from '../dashboard/ChatBot';
 
 function Layout() {
   return (
@@ -16,8 +17,11 @@ function Layout() {
           <Footer />
         </main>
       </div>
+      {/* Global sticky chatbot — visible on all authenticated pages */}
+      <ChatBot />
     </div>
   );
 }
 
 export default Layout;
+

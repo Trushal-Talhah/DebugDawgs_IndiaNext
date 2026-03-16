@@ -195,11 +195,12 @@ export function transformScanResponse(backendResponse) {
     // Recommendations as playbook
     playbook,
 
-    // MITRE ATT&CK Tracking
-    mitreTactic: backendResponse.mitre_tactic || null,
-    mitreStage: backendResponse.mitre_stage || null,
-    mitrePredictions: backendResponse.mitre_predictions || null,
-    mitreSource: backendResponse.mitre_source || null,
+    // MITRE ATT&CK — pass through as-is from backend (no frontend transforms)
+    mitreTactic: backendResponse.mitre_tactic ?? null,
+    mitreStage: backendResponse.mitre_stage ?? null,
+    mitreTotalStages: backendResponse.mitre_total_stages ?? 14,
+    mitrePredictions: backendResponse.mitre_predictions ?? null,
+    mitreSource: backendResponse.mitre_source ?? null,
 
     rawResponse: backendResponse,
     timestamp: backendResponse.timestamp,

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ShieldAlert, ShieldCheck, ShieldQuestion,
   BarChart3, Brain, ListChecks, Radio, Crosshair,
-  ChevronLeft, ChevronRight, ArrowRight, Network,
+  ChevronLeft, ChevronRight, ArrowRight, Network, Swords
 } from 'lucide-react';
 import { useSimpleMode } from '../../hooks/useSimpleMode';
 import './HorizontalResultsStrip.css';
@@ -81,6 +81,7 @@ export default function HorizontalResultsStrip({
   onViewEvidence,
   onTakeAction,
   showEvidence,
+  onViewMitre,
 }) {
   const { isSimple } = useSimpleMode();
   const trackRef = useRef(null);
@@ -98,23 +99,14 @@ export default function HorizontalResultsStrip({
   // 2 — Quick Stats
   cards.push('stats');
 
-  // 3 — Threat Intelligence
-  cards.push('intel');
+  // 3 — MITRE ATT&CK
+  if (result.mitreTactic) cards.push('mitre');
 
-  // 3.5 — MITRE ATT&CK
-  if (result.mitrePredictions?.length) cards.push('mitre');
+  // 4 — Key Signals (Moved before Recommended Actions)
+  if (result.signals?.length) cards.push('signals');
 
   // 4 — Recommended Actions
   if (result.playbook?.length) cards.push('actions');
-
-  // 5 — Key Signals
-  if (result.signals?.length) cards.push('signals');
-
-  // 6 — Highlighted Segments
-  if (result.highlightedSegments?.length) cards.push('segments');
-
-  // 7 — Evidence (only if not simple or explicitly requested)
-  if (showEvidence || !isSimple) cards.push('evidence');
 
   useEffect(() => {
     setCardCount(cards.length);
@@ -231,7 +223,13 @@ export default function HorizontalResultsStrip({
                 onClick={onViewEvidence}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-accent text-white text-xs font-medium rounded-lg hover:bg-accent/90 transition-colors"
               >
-                View Evidence <ArrowRight className="w-3 h-3" />
+                View Evidence 
+                <motion.div
+                  animate={{ rotate: showEvidence ? 90 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </motion.div>
               </button>
               {result.score >= 70 && (
                 <button
@@ -335,6 +333,13 @@ export default function HorizontalResultsStrip({
                 Data: {result.mitreSource.data_source}
               </p>
             )}
+            <button
+               onClick={onViewMitre}
+               className="mt-3 w-full py-2 bg-orange-500/10 text-orange-500 border border-orange-500/20 text-xs font-medium rounded-lg hover:bg-orange-500 hover:text-white transition-colors flex items-center justify-center gap-1"
+            >
+               <Swords size={14} />
+               Full MITRE Report
+            </button>
           </StripCard>
         );
 

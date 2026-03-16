@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, ScanSearch, Image } from 'lucide-react';
-import './HorizontalAnalysisModes.css';
+import { Mail, ScanSearch, Image, ArrowRight, Zap } from 'lucide-react';
 
 const ANALYSIS_MODES = [
   {
@@ -9,136 +8,156 @@ const ANALYSIS_MODES = [
     title: 'Email Analysis',
     description: 'Analyze suspicious emails for phishing, malware, and social engineering attempts',
     icon: Mail,
-    color: 'from-blue-500 to-cyan-500',
-    bgColor: 'bg-blue-500/10',
-    iconColor: 'text-blue-500',
+    gradient: 'from-blue-600 to-blue-400',
+    features: ['Phishing Detection', 'Malware Signatures', 'Social Engineering'],
   },
   {
     id: 'general',
     title: 'General Input',
     description: 'Automatically detect and analyze any type of input including URLs, prompts, logs, and AI-generated content',
     icon: ScanSearch,
-    color: 'from-purple-500 to-pink-500',
-    bgColor: 'bg-purple-500/10',
-    iconColor: 'text-purple-500',
+    gradient: 'from-purple-600 to-purple-400',
+    features: ['Auto Classification', 'Multi-type Support', 'Deep Analysis'],
   },
   {
     id: 'image',
     title: 'Deepfake Image',
     description: 'Detect AI-generated or manipulated images and deepfakes',
     icon: Image,
-    color: 'from-emerald-500 to-teal-500',
-    bgColor: 'bg-emerald-500/10',
-    iconColor: 'text-emerald-500',
+    gradient: 'from-emerald-600 to-emerald-400',
+    features: ['AI Generation', 'Manipulation Detection', 'Face Analysis'],
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+  hover: {
+    y: -8,
+    transition: { duration: 0.3 },
+  },
+};
+
 function HorizontalAnalysisModes() {
-  const [selectedMode, setSelectedMode] = useState('email');
-  const containerRef = useRef(null);
-  const horizontalSectionRef = useRef(null);
-  const [isScrolling, setIsScrolling] = useState(false);
-
-  // Handle horizontal scrolling logic with vertical-to-horizontal transformation
-  useEffect(() => {
-    const horizontalSection = horizontalSectionRef.current;
-    const container = containerRef.current;
-    if (!horizontalSection || !container) return;
-
-    // Calculate dimensions and set up the horizontal scroll effect
-    const calculateScroll = () => {
-      const itemsInView = window.innerWidth < 768 ? 1 : window.innerWidth < 1024 ? 2 : 3;
-      const itemWidth = 320; // width of each card + margins
-      const totalItems = ANALYSIS_MODES.length;
-      const moveAmount = Math.max(0, totalItems - itemsInView);
-      
-      // Set minimum height to enable vertical scrolling
-      if (moveAmount > 0) {
-        const minHeight = (itemWidth * moveAmount * 1.5) + 500;
-        horizontalSection.style.minHeight = `${minHeight}px`;
-      }
-    };
-
-    calculateScroll();
-    window.addEventListener('resize', calculateScroll);
-
-    // Handle scroll event for horizontal movement
-    const handleScroll = () => {
-      if (ANALYSIS_MODES.length <= 3) return;
-      
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const scrollPercentage = scrollTop / (horizontalSection.scrollHeight - window.innerHeight);
-      const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      const targetScrollLeft = scrollPercentage * maxScrollLeft;
-      
-      // Direct scroll without smooth behavior for better performance
-      container.scrollLeft = targetScrollLeft;
-    };
-
-    // Add scroll listener
-    window.addEventListener('scroll', handleScroll);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', calculateScroll);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   return (
-    <div ref={horizontalSectionRef} className="horizontal-section">
-      {/* Sticky Header */}
-      <div className="horizontal-sticky">
-        <div className="max-w-4xl mx-auto px-6">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-text mb-2">Choose Your Analysis Mode</h1>
-            <p className="text-sm text-muted">
-              Select the type of content you want to analyze for threats
-            </p>
+    <div className="min-h-screen bg-gradient-to-b from-bg via-bg to-bg/95 py-16 px-4 sm:px-6">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center mb-16"
+      >
+        {/* <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500/20 to-purple-500/20">
+            <Zap className="w-6 h-6 text-blue-500" />
           </div>
-        </div>
-      </div>
+          <span className="text-sm font-semibold text-accent">Quick Analysis</span>
+        </div> */}
+        <h1 className="text-4xl sm:text-5xl font-bold text-text mb-4">
+          Choose Your Analysis Mode
+        </h1>
+        <p className="text-base sm:text-lg text-muted max-w-2xl mx-auto">
+          Select the type of content you want to analyze for threats. Our AI-powered detection engine will identify risks and provide detailed insights.
+        </p>
+      </motion.div>
 
-      {/* Horizontal Scrolling Container */}
-      <div className="horizontal-wrapper" ref={containerRef}>
+      {/* Cards Grid */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8"
+      >
         {ANALYSIS_MODES.map((mode) => {
           const Icon = mode.icon;
           return (
-            <div key={mode.id} className="horizontal-item">
-              <Link 
+            <motion.div
+              key={mode.id}
+              variants={cardVariants}
+              whileHover="hover"
+              className="group h-full"
+            >
+              <Link
                 to={`/analyze?type=${mode.id}`}
-                className={`block rounded-2xl border border-border p-6 transition-all duration-300 hover:shadow-lg hover:border-accent/30 ${
-                  selectedMode === mode.id ? 'ring-2 ring-accent' : ''
-                }`}
-                onClick={() => setSelectedMode(mode.id)}
+                className="block h-full"
               >
-                <div className={`w-12 h-12 rounded-xl ${mode.bgColor} flex items-center justify-center mb-4`}>
-                  <Icon className={`w-6 h-6 ${mode.iconColor}`} />
-                </div>
-                <h3 className="text-lg font-semibold text-text mb-2">{mode.title}</h3>
-                <p className="text-sm text-muted leading-relaxed">{mode.description}</p>
-                <div className="mt-4">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-panel border border-border rounded-full text-xs font-medium text-text">
-                    Select →
-                  </span>
+                <div className="relative h-full rounded-2xl overflow-hidden bg-panel border border-border/50 p-8 transition-all duration-500 hover:border-accent/30 hover:shadow-xl hover:shadow-accent/10 group-hover:shadow-2xl">
+                  {/* Gradient overlay on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${mode.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
+
+                  {/* Content */}
+                  <div className="relative z-10 flex flex-col h-full">
+                    {/* Icon */}
+                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${mode.gradient} p-3 mb-6 shadow-lg shadow-${mode.gradient.split(' ')[1]}/20`}>
+                      <Icon className="w-full h-full text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-2xl font-bold text-text mb-3 group-hover:text-accent transition-colors">
+                      {mode.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-sm text-muted leading-relaxed mb-6 flex-grow">
+                      {mode.description}
+                    </p>
+
+                    {/* Features */}
+                    <div className="space-y-2 mb-6">
+                      {mode.features.map((feature) => (
+                        <div key={feature} className="flex items-center gap-2 text-xs text-muted/70">
+                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${mode.gradient}`} />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA Button */}
+                    <motion.div
+                      whileHover={{ x: 4 }}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r ${mode.gradient} text-black text-sm font-semibold shadow-lg transition-all"
+                    >
+                      <span>Get Started</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </motion.div>
+                  </div>
                 </div>
               </Link>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
-      {/* Mobile indicator */}
-      <div className="flex justify-center space-x-2 mt-4 md:hidden max-w-4xl mx-auto px-6">
-        {ANALYSIS_MODES.map((mode, index) => (
-          <div 
-            key={mode.id}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              selectedMode === mode.id ? 'bg-accent' : 'bg-border'
-            }`}
-          />
-        ))}
-      </div>
+      {/* Bottom decoration */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6, duration: 1 }}
+        className="mt-20 text-center"
+      >
+        <p className="text-xs text-muted/50">
+          Real-time threat detection powered by advanced AI models
+        </p>
+      </motion.div>
     </div>
   );
 }
