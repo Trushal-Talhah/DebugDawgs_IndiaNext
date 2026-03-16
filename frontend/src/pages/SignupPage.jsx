@@ -1,3 +1,5 @@
+
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,11 +11,12 @@ import CyberParticleBackground from '../components/shared/CyberParticleBackgroun
 function SocialButton({ onClick, icon, label, disabled }) {
   return (
     <motion.button
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.02, boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-sm font-semibold text-gray-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      className="flex items-center justify-center gap-3 w-full py-3 px-4 rounded-xl border border-gray-200/50 text-sm font-semibold text-gray-700 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(12px)' }}
     >
       {icon}
       {label}
@@ -90,28 +93,36 @@ export default function SignupPage() {
   }
 
   const fieldClass =
-    'w-full py-3 rounded-xl border border-gray-200 text-sm text-gray-900 bg-gray-50 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all';
+    'w-full py-3 rounded-xl border border-gray-200/50 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all';
+  const fieldStyle = { background: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(8px)' };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center relative overflow-hidden py-10">
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-10" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0fdf4 100%)' }}>
       {/* 3D particle background */}
       <CyberParticleBackground />
 
+      {/* Floating gradient orbs */}
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-400/10 blur-3xl animate-float" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-purple-400/10 blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10 w-full max-w-md"
+        initial={{ opacity: 0, y: 24, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative z-10 w-full max-w-md px-4"
       >
         {/* logo */}
-        <div className="flex items-center justify-center gap-2.5 mb-8">
-          <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-200">
-            <Zap className="w-5 h-5 text-white" />
-          </span>
+        <motion.div
+          className="flex items-center justify-center gap-2.5 mb-8"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <img src="/logo.png" alt="SentinelAI Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg" />
           <span className="text-2xl font-bold text-gray-900 tracking-tight">SentinelAI</span>
-        </div>
+        </motion.div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100 p-8">
+        <div className="rounded-2xl p-8" style={{ background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.8)', boxShadow: '0 24px 80px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.9) inset' }}>
           <h1 className="text-2xl font-bold text-gray-900 text-center">Create an account</h1>
           <p className="mt-1.5 text-sm text-gray-500 text-center">Start securing your systems today</p>
 
@@ -140,6 +151,7 @@ export default function SignupPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Jane Doe"
                   className={`${fieldClass} pl-10 pr-4`}
+                  style={fieldStyle}
                 />
               </div>
             </div>
@@ -156,6 +168,7 @@ export default function SignupPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   className={`${fieldClass} pl-10 pr-4`}
+                  style={fieldStyle}
                 />
               </div>
             </div>
@@ -172,6 +185,7 @@ export default function SignupPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className={`${fieldClass} pl-10 pr-11`}
+                  style={fieldStyle}
                 />
                 <button type="button" onClick={() => setShowPw((v) => !v)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -192,6 +206,7 @@ export default function SignupPage() {
                   onChange={(e) => setConfirm(e.target.value)}
                   placeholder="••••••••"
                   className={`${fieldClass} pl-10 pr-11`}
+                  style={fieldStyle}
                 />
                 {confirm && (
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2">
@@ -208,8 +223,7 @@ export default function SignupPage() {
               whileTap={{ scale: 0.97 }}
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl text-sm font-semibold text-white shadow-lg shadow-blue-200 transition-all hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed"
-              style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
+              className="w-full py-3 rounded-xl text-sm font-semibold text-white btn-gradient disabled:opacity-60 disabled:cursor-not-allowed transition-all"
             >
               {loading ? 'Creating account…' : 'Create Account'}
             </motion.button>
@@ -217,9 +231,9 @@ export default function SignupPage() {
 
           {/* divider */}
           <div className="flex items-center gap-3 my-6">
-            <div className="flex-1 h-px bg-gray-100" />
+            <div className="flex-1 h-px bg-gray-200/50" />
             <span className="text-xs text-gray-400 font-medium">or sign up with</span>
-            <div className="flex-1 h-px bg-gray-100" />
+            <div className="flex-1 h-px bg-gray-200/50" />
           </div>
 
           {/* social buttons */}

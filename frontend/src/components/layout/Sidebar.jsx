@@ -25,11 +25,8 @@ const NAV_ITEMS = [
     label: 'Analyze',
     subItems: [
       { to: '/analyze?type=email', label: 'Email', icon: Mail },
-      { to: '/analyze?type=url', label: 'URL', icon: LinkIcon },
-      { to: '/analyze?type=prompt', label: 'Prompt', icon: MessageSquare },
+      { to: '/analyze?type=general', label: 'General Input', icon: ScanSearch },
       { to: '/analyze?type=image', label: 'Deepfake Image', icon: Image },
-      { to: '/analyze?type=login_log', label: 'Login Log', icon: FileText },
-      { to: '/analyze?type=ai_text', label: 'AI Text', icon: Bot },
     ]
   },
   { to: '/incidents', icon: ShieldAlert, label: 'Incidents' },

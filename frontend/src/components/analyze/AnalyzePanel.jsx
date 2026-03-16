@@ -1,15 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Mail, Link, MessageSquare, ChevronDown, FileText, Bot, Image } from 'lucide-react';
+import { Mail, ScanSearch, ChevronDown, Image } from 'lucide-react';
 import { SAMPLE_INPUTS } from '../../data/sampleData';
 
 const TYPE_OPTIONS = [
   { value: 'email', label: 'Email', icon: Mail },
-  { value: 'url', label: 'URL', icon: Link },
-  { value: 'prompt', label: 'Prompt', icon: MessageSquare },
-  { value: 'login_log', label: 'Login Log', icon: FileText },
-  { value: 'ai_text', label: 'AI Text', icon: Bot },
-  { value: 'image', label: 'Image (Deepfake)', icon: Image },
+  { value: 'general', label: 'General Input', icon: ScanSearch },
+  { value: 'image', label: 'Deepfake Image', icon: Image },
 ];
 
 const SCAN_MODE_OPTIONS = [

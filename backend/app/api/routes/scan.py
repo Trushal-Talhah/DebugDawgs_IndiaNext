@@ -9,7 +9,7 @@ from app.models.schemas import ScanResponse, FeatureWeight, ModuleResult
 from app.agent.threat_agent import analyze
 from app.storage.incident_store import save_incident
 from app.services.input_classifier import classify_input
-from app.fusion.fusion_engine import compute_fusion
+from app.agent.fusion_engine import compute_fusion
 
 # ── Raw detector imports (zero LLM calls) ────────────────────────────────────
 from app.detectors.url_analyzer import (
