@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   animate,
   motion,
-  useAnimationFrame,
   useInView,
-  useMotionTemplate,
   useMotionValue,
   useMotionValueEvent,
   useTransform,
@@ -13,8 +11,9 @@ import {
 import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap } from 'lucide-react';
 import { fadeUp, heroWord, heroWordContainer, staggerContainer } from '../animations/variants';
 import { DASHBOARD_STATS } from '../data/sampleData';
-import Particles from '../components/shared/Particles';
+import CyberParticleBackground from '../components/shared/CyberParticleBackground';
 
+/* ─── data ─── */
 const HERO_WORDS = ['Detect.', 'Explain.', 'Respond.'];
 
 const FEATURE_CARDS = [
@@ -22,21 +21,25 @@ const FEATURE_CARDS = [
     title: 'Real-time Threat Scoring',
     description: 'Classifies risk with explainable confidence signals and contextual evidence.',
     icon: ShieldCheck,
+    gradient: 'from-blue-500/10 to-cyan-500/10',
   },
   {
     title: 'Analyst-Ready Workflow',
     description: 'Moves from detection to remediation in one continuous security workflow.',
     icon: Workflow,
+    gradient: 'from-purple-500/10 to-pink-500/10',
   },
   {
     title: 'Low-Latency Decisions',
     description: 'Streams prioritized signals so teams can block attacks faster and safer.',
     icon: Gauge,
+    gradient: 'from-emerald-500/10 to-teal-500/10',
   },
   {
     title: 'Adaptive Intelligence',
     description: 'Learns from incidents and surfaces evolving adversarial behavior patterns.',
     icon: Sparkles,
+    gradient: 'from-amber-500/10 to-orange-500/10',
   },
 ];
 
@@ -48,12 +51,13 @@ const STATS = [
 ];
 
 const TESTIMONIALS = [
-  '“Reduced phishing triage from minutes to seconds.”',
-  '“The evidence timeline made approvals significantly faster.”',
-  '“Simple mode helped non-security teams act confidently.”',
-  '“We finally have explainability without dashboard clutter.”',
+  '"Reduced phishing triage from minutes to seconds."',
+  '"The evidence timeline made approvals significantly faster."',
+  '"Simple mode helped non-security teams act confidently."',
+  '"We finally have explainability without dashboard clutter."',
 ];
 
+/* ─── animated counter ─── */
 function AnimatedCounter({ value, suffix = '' }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
@@ -66,108 +70,122 @@ function AnimatedCounter({ value, suffix = '' }) {
   });
 
   useEffect(() => {
-    if (!isInView) {
-      return undefined;
-    }
-    const controls = animate(motionValue, value, {
-      duration: 1.2,
-      ease: 'easeOut',
-    });
+    if (!isInView) return undefined;
+    const controls = animate(motionValue, value, { duration: 1.2, ease: 'easeOut' });
     return () => controls.stop();
   }, [isInView, motionValue, value]);
 
   return (
-    <span ref={ref} className="text-3xl font-bold text-text leading-none">
+    <span ref={ref} className="text-3xl font-bold text-gray-900 leading-none">
       {displayValue.toLocaleString()}
       {suffix}
     </span>
   );
 }
 
+/* ─── glassmorphism card component (Light Theme) ─── */
+function GlassCard({ children, className = '', hover = true }) {
+  return (
+    <motion.div
+      whileHover={hover ? { y: -6, scale: 1.01, boxShadow: '0 20px 60px rgba(0,0,0,0.10)' } : {}}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className={`
+        relative overflow-hidden rounded-2xl
+        bg-white
+        border border-gray-100
+        shadow-[0_2px_20px_rgba(0,0,0,0.06)]
+        ${className}
+      `}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════
+   LandingPage (Light Theme)
+   ═══════════════════════════════════════════════════ */
 function LandingPage() {
-  const meshX = useMotionValue(0);
-  const meshY = useMotionValue(0);
-  const bgPosition = useMotionTemplate`${meshX}% ${meshY}%`;
-
-  useAnimationFrame((time) => {
-    meshX.set(50 + Math.sin(time / 5200) * 12);
-    meshY.set(46 + Math.cos(time / 4300) * 10);
-  });
-
   const ctaRef = useRef(null);
   const ctaInView = useInView(ctaRef, { once: true, margin: '-80px' });
 
   return (
-    <div className="min-h-screen bg-bg text-text">
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <Particles
-          particleColors={['#340df8']}
-          particleCount={300}
-          particleSpread={10}
-          speed={0.1}
-          particleBaseSize={100}
-          moveParticlesOnHover
-          alphaParticles={false}
-          disableRotation={false}
-          pixelRatio={1}
-        />
-      </div>
+    <div className="min-h-screen text-gray-900 bg-gray-50/50">
 
-      <section className="relative min-h-screen overflow-hidden border-b border-border">
+      {/* ════════════ HERO SECTION ════════════ */}
+      <section className="relative min-h-screen overflow-hidden">
+        {/* 3D Particle Background - It renders behind the glass cards */}
+        <CyberParticleBackground />
 
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 opacity-80 pointer-events-none"
+        {/* subtle radial gradient overlay for light theme */}
+        <div
+          className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundPosition: bgPosition,
-            backgroundImage:
-              'radial-gradient(circle at 20% 20%, var(--color-accent-light), transparent 42%), radial-gradient(circle at 80% 15%, var(--color-glass), transparent 38%), radial-gradient(circle at 50% 85%, var(--color-panel), transparent 44%)',
+            background:
+              'radial-gradient(circle at 50% 40%, rgba(59,130,246,0.03) 0%, transparent 60%), radial-gradient(circle at 30% 70%, rgba(16,185,129,0.02) 0%, transparent 50%)',
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col">
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-8 h-screen flex flex-col">
+          {/* top bar */}
           <header className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-semibold tracking-wide">
-              <span className="w-8 h-8 rounded-lg bg-accent-light text-accent flex items-center justify-center">
+              <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center backdrop-blur">
                 <Zap className="w-4 h-4" />
               </span>
-              SentinelAI
+              <span className="text-gray-900">SentinelAI</span>
             </div>
+            <nav className="hidden md:flex items-center gap-7 text-sm text-gray-500 font-medium">
+              <Link to="/dashboard" className="hover:text-gray-900 transition-colors no-underline">Dashboard</Link>
+              <Link to="/analyze" className="hover:text-gray-900 transition-colors no-underline">Analyze</Link>
+              <Link to="/incidents" className="hover:text-gray-900 transition-colors no-underline">Incidents</Link>
+              <Link to="/sandbox" className="hover:text-gray-900 transition-colors no-underline">Sandbox</Link>
+            </nav>
             <Link
               to="/dashboard"
-              className="text-sm font-medium text-muted hover:text-text transition-colors no-underline"
+              className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors no-underline"
             >
-              Go to Dashboard
+              Go to Dashboard →
             </Link>
           </header>
 
+          {/* hero content */}
           <div className="flex-1 flex items-center">
             <div className="max-w-3xl">
               <motion.p
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-bg/80 text-xs font-medium text-muted"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 bg-white/60 backdrop-blur-md text-xs font-semibold text-gray-600 shadow-sm"
                 variants={fadeUp}
                 initial="hidden"
                 animate="visible"
               >
-                <Sparkles className="w-3.5 h-3.5 text-accent" />
+                <Sparkles className="w-3.5 h-3.5 text-blue-500" />
                 Explainable Security Intelligence
               </motion.p>
 
               <motion.h1
-                className="mt-5 text-5xl md:text-6xl font-semibold leading-tight tracking-tight"
+                className="mt-6 text-6xl md:text-8xl font-bold leading-[1.1] tracking-tight"
                 variants={heroWordContainer}
                 initial="hidden"
                 animate="visible"
               >
                 {HERO_WORDS.map((word) => (
-                  <motion.span key={word} variants={heroWord} className="inline-block mr-4">
+                  <motion.span
+                    key={word}
+                    variants={heroWord}
+                    className="inline-block mr-4"
+                    style={{
+                      background: 'linear-gradient(135deg, #111827 0%, #3b82f6 50%, #10b981 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
                     {word}
                   </motion.span>
                 ))}
               </motion.h1>
 
               <motion.p
-                className="mt-5 text-lg text-muted max-w-2xl"
+                className="mt-6 text-xl text-gray-500 max-w-2xl leading-relaxed"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -177,18 +195,28 @@ function LandingPage() {
               </motion.p>
 
               <motion.div
-                className="mt-8"
+                className="mt-10 flex items-center gap-4"
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.45, duration: 0.4 }}
               >
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} className="inline-block">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
                   <Link
                     to="/dashboard"
-                    className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-white text-sm font-semibold no-underline hover:bg-accent/90 transition-colors"
+                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-sm font-semibold no-underline text-white shadow-lg shadow-blue-500/20 transition-all hover:shadow-xl hover:shadow-blue-500/30"
+                    style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
                   >
                     Launch Platform
                     <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
+                  <Link
+                    to="/analyze"
+                    className="inline-flex items-center gap-2 px-7 py-4 rounded-xl border border-gray-200 bg-white/60 backdrop-blur-md text-sm font-semibold text-gray-700 no-underline hover:bg-white transition-colors shadow-sm"
+                  >
+                    <Sparkles className="w-4 h-4 text-emerald-500" />
+                    Try Analysis
                   </Link>
                 </motion.div>
               </motion.div>
@@ -197,35 +225,42 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      {/* ════════════ GLASSMORPHISM FEATURE CARDS ════════════ */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-20 -mt-20">
+        {/* feature cards grid */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
         >
-          {FEATURE_CARDS.map(({ title, description, icon: Icon }, index) => (
-            <motion.article
+          {FEATURE_CARDS.map(({ title, description, icon: Icon, gradient }, index) => (
+            <motion.div
               key={title}
               custom={index}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-80px' }}
-              whileHover={{ y: -6, boxShadow: '0 16px 40px var(--color-glass)' }}
-              className="bg-bg border border-border rounded-xl p-5"
             >
-              <div className="w-10 h-10 rounded-lg bg-accent-light text-accent flex items-center justify-center">
-                <Icon className="w-5 h-5" />
-              </div>
-              <h3 className="mt-4 text-base font-semibold text-text">{title}</h3>
-              <p className="mt-2 text-sm text-muted leading-relaxed">{description}</p>
-            </motion.article>
+              <GlassCard className="p-6 h-full">
+                {/* gradient accent blob */}
+                <div className={`absolute -top-8 -right-8 w-32 h-32 rounded-full bg-gradient-to-br ${gradient} blur-2xl opacity-80`} />
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shadow-sm">
+                    <Icon className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-semibold text-gray-900">{title}</h3>
+                  <p className="mt-2 text-sm text-gray-500 leading-relaxed">{description}</p>
+                </div>
+              </GlassCard>
+            </motion.div>
           ))}
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-10">
+        {/* stats counters */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
           {STATS.map((item) => (
             <motion.div
               key={item.label}
@@ -233,78 +268,66 @@ function LandingPage() {
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.45 }}
-              className="bg-panel rounded-xl border border-border p-5"
             >
-              <AnimatedCounter value={item.value} suffix={item.suffix} />
-              <p className="mt-2 text-sm text-muted">{item.label}</p>
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <AnimatedCounter value={item.value} suffix={item.suffix} />
+                <p className="mt-2 text-sm text-gray-500 font-medium">{item.label}</p>
+              </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-20">
+      {/* ════════════ HOW IT WORKS ════════════ */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-20">
         <motion.div
-          initial={{ scale: 0.92, opacity: 0 }}
+          initial={{ scale: 0.95, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
           viewport={{ once: true, margin: '-120px' }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="relative bg-panel border border-border rounded-2xl p-6 md:p-8 overflow-hidden"
         >
-          <h2 className="text-2xl font-semibold">How it works</h2>
-          <p className="text-sm text-muted mt-2 max-w-2xl">
-            Input analysis flows into explainable scoring, structured evidence, and guided action
-            steps in one interface.
-          </p>
+          <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-8 md:p-10">
+            <h2 className="text-3xl font-semibold text-gray-900 tracking-tight">How it works</h2>
+              <p className="text-base text-gray-500 mt-2 max-w-2xl">
+                Input analysis flows into explainable scoring, structured evidence, and guided action
+                steps in one seamless interface.
+              </p>
 
-          <div className="mt-6 rounded-xl border border-border bg-bg p-5">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-              {[
-                { label: 'Threats Today', value: DASHBOARD_STATS.threatsToday },
-                { label: 'High Risk', value: DASHBOARD_STATS.highRisk },
-                { label: 'Medium Risk', value: DASHBOARD_STATS.mediumRisk },
-                { label: 'Blocked', value: DASHBOARD_STATS.blockedToday },
-                { label: 'Pending', value: DASHBOARD_STATS.pendingReview },
-              ].map((item) => (
-                <div key={item.label} className="bg-bg rounded-xl border border-border p-3">
-                  <p className="text-xl font-bold text-text leading-none">{item.value}</p>
-                  <p className="text-xs text-muted mt-1">{item.label}</p>
+              <div className="mt-8 rounded-xl border border-gray-100 bg-white/50 backdrop-blur-sm p-6 shadow-sm">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                  {[
+                    { label: 'Threats Today', value: DASHBOARD_STATS.threatsToday },
+                    { label: 'High Risk', value: DASHBOARD_STATS.highRisk },
+                    { label: 'Medium Risk', value: DASHBOARD_STATS.mediumRisk },
+                    { label: 'Blocked', value: DASHBOARD_STATS.blockedToday },
+                    { label: 'Pending', value: DASHBOARD_STATS.pendingReview },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                      <p className="text-2xl font-bold text-gray-900 leading-none">{item.value}</p>
+                      <p className="text-xs font-semibold text-gray-400 mt-1 uppercase tracking-wider">{item.label}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+
+            <div className="absolute top-8 right-8 px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 tracking-wide uppercase">
+                Live Confidence
+              </div>
           </div>
-
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.15 }}
-            className="absolute top-5 right-5 px-3 py-1.5 rounded-full bg-accent-light text-accent text-xs font-semibold border border-border"
-          >
-            Live Confidence
-          </motion.div>
-
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.28 }}
-            className="absolute bottom-5 left-6 px-3 py-1.5 rounded-full bg-bg text-text text-xs font-semibold border border-border"
-          >
-            Explainable Decisions
-          </motion.div>
         </motion.div>
       </section>
 
-      <section className="border-y border-border py-6 overflow-hidden">
+      {/* ════════════ TESTIMONIALS MARQUEE ════════════ */}
+      <section className="relative z-10 border-y border-gray-200 bg-white/30 backdrop-blur-md py-8 overflow-hidden shadow-sm">
         <motion.div
-          className="flex gap-4 w-max"
+          className="flex gap-6 w-max"
           animate={{ x: ['0%', '-50%'] }}
-          transition={{ repeat: Infinity, duration: 22, ease: 'linear' }}
+          transition={{ repeat: Infinity, duration: 25, ease: 'linear' }}
         >
           {[...TESTIMONIALS, ...TESTIMONIALS].map((quote, index) => (
             <div
               key={`${quote}-${index}`}
-              className="px-4 py-2 rounded-lg bg-panel border border-border text-sm text-muted"
+              className="px-6 py-3 rounded-full bg-white border border-gray-200 shadow-sm text-sm font-medium text-gray-600"
             >
               {quote}
             </div>
@@ -312,33 +335,40 @@ function LandingPage() {
         </motion.div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="rounded-2xl border border-border bg-panel p-8 md:p-10 text-center">
-          <motion.h2
-            initial={{ y: 24, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.45 }}
-            className="text-3xl md:text-4xl font-semibold tracking-tight"
-          >
-            Move from signal to action — fast.
-          </motion.h2>
-
-          <motion.div
-            ref={ctaRef}
-            initial={{ y: 24, opacity: 0 }}
-            animate={ctaInView ? { y: 0, opacity: 1 } : {}}
-            transition={{ duration: 0.45, delay: 0.15 }}
-            className="mt-6"
-          >
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-accent text-white text-sm font-semibold no-underline hover:bg-accent/90 transition-colors"
+      {/* ════════════ CTA ════════════ */}
+      <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
+        <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-10 md:p-14 text-center">
+          <div className="absolute inset-0 rounded-2xl" style={{
+            background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 60%)',
+          }} />
+          <div className="relative">
+            <motion.h2
+              initial={{ y: 24, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.45 }}
+              className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900"
             >
-              Start Monitoring
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </motion.div>
+              Move from signal to action — fast.
+            </motion.h2>
+
+            <motion.div
+              ref={ctaRef}
+              initial={{ y: 24, opacity: 0 }}
+              animate={ctaInView ? { y: 0, opacity: 1 } : {}}
+              transition={{ duration: 0.45, delay: 0.15 }}
+              className="mt-8"
+            >
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold no-underline text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/35"
+                style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
+              >
+                Start Monitoring
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </motion.div>
+          </div>
         </div>
       </section>
     </div>
