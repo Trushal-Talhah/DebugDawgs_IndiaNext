@@ -13,6 +13,7 @@ import {
 import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap } from 'lucide-react';
 import { fadeUp, heroWord, heroWordContainer, staggerContainer } from '../animations/variants';
 import { DASHBOARD_STATS } from '../data/sampleData';
+import Particles from '../components/shared/Particles';
 
 const HERO_WORDS = ['Detect.', 'Explain.', 'Respond.'];
 
@@ -98,10 +99,25 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen bg-bg text-text">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <Particles
+          particleColors={['#340df8']}
+          particleCount={300}
+          particleSpread={10}
+          speed={0.1}
+          particleBaseSize={100}
+          moveParticlesOnHover
+          alphaParticles={false}
+          disableRotation={false}
+          pixelRatio={1}
+        />
+      </div>
+
       <section className="relative min-h-screen overflow-hidden border-b border-border">
+
         <motion.div
           aria-hidden
-          className="absolute inset-0 opacity-80"
+          className="absolute inset-0 opacity-80 pointer-events-none"
           style={{
             backgroundPosition: bgPosition,
             backgroundImage:

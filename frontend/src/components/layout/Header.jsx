@@ -13,7 +13,7 @@ function Header() {
         <Shield className="w-5 h-5 text-accent" strokeWidth={2.5} />
         <span className="font-semibold text-base tracking-tight">SentinelAI</span>
       </Link>
-    
+
       {/* Center: Search */}
       <div className="flex-1 max-w-md mx-8">
         {searchOpen ? (
@@ -44,7 +44,6 @@ function Header() {
           >
             <Search className="w-4 h-4" />
             <span>Search...</span>
-            <kbd className="ml-auto text-xs bg-bg border border-border rounded px-1.5 py-0.5 font-mono text-muted">⌘K</kbd>
           </button>
         )}
       </div>
