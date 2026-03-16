@@ -1,0 +1,51 @@
+/* Horizontal Scrolling Styles */
+.horizontal-section {
+  position: relative;
+  min-height: 100vh;
+}
+
+.horizontal-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  padding: 1.5rem 0;
+}
+
+.horizontal-wrapper {
+  display: flex;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-item {
+  flex: 0 0 320px;
+  margin: 0 1rem;
+  scroll-snap-align: start;
+}
+
+/* Hide scrollbar */
+.horizontal-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-wrapper {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .horizontal-item {
+    flex: 0 0 280px;
+    margin: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .horizontal-item {
+    flex: 0 0 260px;
+    margin: 0 0.25rem;
+  }
+}

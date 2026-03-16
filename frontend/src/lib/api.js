@@ -122,8 +122,36 @@ export function transformScanResponse(backendResponse) {
   const featureWeights = backendResponse.feature_weights || [];
   const highlightedSegments = backendResponse.highlighted_segments || [];
   const recommendations = backendResponse.recommendations || [];
+  const perModuleScores = backendResponse.per_module_scores || {};
+  const threatsDetected = backendResponse.threats_detected || [];
   const riskScore = Number(backendResponse.risk_score || 0);
   const confidence = Number(backendResponse.confidence || 0);
+  const moduleScores = Object.entries(perModuleScores)
+    .map(([name, score]) => ({
+      name,
+      score: Math.round(Number(score || 0)),
+    }))
+    .sort((a, b) => b.score - a.score);
+
+  const mappedFeatures = featureWeights.length
+    ? featureWeights.map((fw) => ({
+        label: fw.feature,
+        value: Math.round(fw.weight * 100),
+        color: getColorFromWeight(fw.weight),
+      }))
+    : moduleScores.map((module) => ({
+        label: module.name,
+        value: module.score,
+        color: getColorFromScore(module.score),
+      }));
+
+  const playbook = recommendations.length
+    ? recommendations
+    : [
+        'Avoid engaging with suspicious links or attachments.',
+        'Verify the sender and context through a trusted channel.',
+        'Report this message to your security team for triage.',
+      ];
 
   return {
     scanId: backendResponse.scan_id,
@@ -133,7 +161,17 @@ export function transformScanResponse(backendResponse) {
     score: Math.round(riskScore),
     confidence: Math.round(confidence),
     label: getVerdictLabel(backendResponse.verdict, riskScore),
-    topReason: backendResponse.explanation,
+    topReason: backendResponse.explanation || signals[0] || 'No explanation provided by backend.',
+    explanation: backendResponse.explanation || '',
+    signals,
+    highlightedSegments,
+    threatsDetected: threatsDetected.length
+      ? threatsDetected
+      : (backendResponse.threat_type ? [backendResponse.threat_type] : []),
+    moduleScores,
+    modulesTriggered: Number(backendResponse.modules_triggered || moduleScores.length || 0),
+    isCompoundThreat: Boolean(backendResponse.is_compound_threat),
+    compoundThreatLabel: backendResponse.compound_threat_label || '',
     
     // Map signals to evidence steps
     evidenceSteps: signals.map((signal, index) => ({
@@ -144,12 +182,8 @@ export function transformScanResponse(backendResponse) {
       severity: getSeverityFromScore(riskScore),
     })),
     
-    // Map feature_weights to features format
-    features: featureWeights.map((fw) => ({
-      label: fw.feature,
-      value: Math.round(fw.weight * 100),
-      color: getColorFromWeight(fw.weight),
-    })),
+    // Map feature_weights to features format (fallback to module scores)
+    features: mappedFeatures,
     
     // Counterfactuals (generated from highlighted_segments)
     counterfactuals: highlightedSegments.map((segment, index) => ({
@@ -159,7 +193,7 @@ export function transformScanResponse(backendResponse) {
     })),
     
     // Recommendations as playbook
-    playbook: recommendations,
+    playbook,
 
     rawResponse: backendResponse,
     timestamp: backendResponse.timestamp,
@@ -206,6 +240,12 @@ function getSeverityFromScore(score) {
 function getColorFromWeight(weight) {
   if (weight >= 0.5) return 'danger';
   if (weight >= 0.25) return 'warning';
+  return 'muted';
+}
+
+function getColorFromScore(score) {
+  if (score >= 70) return 'danger';
+  if (score >= 40) return 'warning';
   return 'muted';
 }
 
