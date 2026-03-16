@@ -9,11 +9,6 @@ const TYPE_OPTIONS = [
   { value: 'image', label: 'Deepfake Image', icon: Image },
 ];
 
-const SCAN_MODE_OPTIONS = [
-  { value: 'auto', label: 'Auto Scan (/scan)' },
-  { value: 'typed', label: 'Typed Scan (/scan/typed)' },
-];
-
 function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillValue = '' }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlType = searchParams.get('type') || 'email';
@@ -78,6 +73,38 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
     setImagePreview(null);
   }
 
+  /* ── handle pasting images from clipboard ── */
+  useEffect(() => {
+    function handleGlobalPaste(e) {
+      if (!isImageMode) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) {
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+            break;
+          }
+        }
+      }
+    }
+
+    // Only attach global paste listener if in image mode
+    if (isImageMode) {
+      document.addEventListener('paste', handleGlobalPaste);
+    }
+    return () => {
+      document.removeEventListener('paste', handleGlobalPaste);
+    };
+  }, [isImageMode]);
+
   function handleSubmit(e) {
     e.preventDefault();
     if (isImageMode) {
@@ -94,33 +121,6 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-base font-semibold text-text">Analyze Input</h2>
       </div>
-
-      {/* Scan mode selector */}
-      {!isImageMode && (
-        <div className="mb-3">
-          <label className="block text-xs font-medium text-muted mb-1.5" id="scan-mode-label">
-            Scan Mode
-          </label>
-          <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-labelledby="scan-mode-label">
-            {SCAN_MODE_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                role="radio"
-                aria-checked={mode === option.value}
-                onClick={() => setMode(option.value)}
-                className={`px-3 py-2 text-xs rounded-lg border transition-colors ${
-                  mode === option.value
-                    ? 'border-accent text-accent bg-accent-light font-medium'
-                    : 'border-border text-muted hover:border-accent/40'
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Type selector */}
       <div className="relative mb-3">
@@ -168,7 +168,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
               Upload Image
             </label>
             {imagePreview ? (
-              <div className="relative">
+              <div className="relative border-2 border-accent/20 rounded-lg p-1 bg-accent/5">
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -177,7 +177,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
                 <button
                   type="button"
                   onClick={clearImage}
-                  className="absolute top-2 right-2 p-1.5 bg-bg/80 rounded-lg border border-border hover:bg-panel text-muted hover:text-text transition-colors"
+                  className="absolute top-3 right-3 p-1.5 bg-bg/80 rounded-lg border border-border hover:bg-panel text-muted hover:text-danger transition-all shadow-sm"
                   aria-label="Remove image"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,15 +186,19 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-full h-48 bg-panel border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-accent/40 transition-colors">
+              <label 
+                className="flex flex-col items-center justify-center w-full h-48 bg-panel border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-accent/40 focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent transition-colors"
+                tabIndex={0}
+              >
                 <Image className="w-8 h-8 text-muted mb-2" />
-                <span className="text-sm text-muted">Click to upload or drag and drop</span>
-                <span className="text-xs text-muted mt-1">JPEG, PNG, WebP, GIF (max 5MB)</span>
+                <span className="text-sm font-medium text-text">Click to upload, drop an image, or <span className="text-accent underline decoration-accent/30 underline-offset-2">paste (Ctrl+V)</span></span>
+                <span className="text-xs text-muted mt-1.5">JPEG, PNG, WebP, GIF (max 5MB)</span>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleImageChange}
-                  className="hidden"
+                  className="opacity-0 w-0 h-0"
+                  tabIndex={-1}
                 />
               </label>
             )}

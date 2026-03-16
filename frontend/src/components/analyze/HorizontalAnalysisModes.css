@@ -1,51 +1,21 @@
-/* Horizontal Scrolling Styles */
-.horizontal-section {
-  position: relative;
-  min-height: 100vh;
-}
+/* Simplified styles - horizontal scroll removed in favor of grid layout */
 
-.horizontal-sticky {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg);
-  padding: 1.5rem 0;
-}
-
-.horizontal-wrapper {
-  display: flex;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-.horizontal-item {
-  flex: 0 0 320px;
-  margin: 0 1rem;
-  scroll-snap-align: start;
-}
-
-/* Hide scrollbar */
-.horizontal-wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-.horizontal-wrapper {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .horizontal-item {
-    flex: 0 0 280px;
-    margin: 0 0.5rem;
+/* Optional: Add any custom animations or effects here */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
   }
+
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Responsive refinements if needed */
+@media (max-width: 768px) {
+  /* Cards will automatically reflow to single column via CSS grid */
 }
 
 @media (max-width: 480px) {
-  .horizontal-item {
-    flex: 0 0 260px;
-    margin: 0 0.25rem;
-  }
+  /* Same responsive behavior */
 }

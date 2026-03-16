@@ -30,12 +30,11 @@ const NAV_ITEMS = [
     ]
   },
   { to: '/incidents', icon: ShieldAlert, label: 'Incidents' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [analyzeExpanded, setAnalyzeExpanded] = useState(false);
+  const [analyzeExpanded, setAnalyzeExpanded] = useState(true);
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
 
