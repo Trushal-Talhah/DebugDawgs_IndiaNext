@@ -146,3 +146,5 @@ out/
 *.swp
 *.swo
 .python-version
+
+backend/models
