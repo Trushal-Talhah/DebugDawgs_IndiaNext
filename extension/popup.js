@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const confBar        = document.getElementById('confBar');
   const modeTag        = document.getElementById('modeTag');
 
-  const API_URL  = 'http://localhost:8000/api/scan';
+  const API_URL  = 'https://lindsey-unrepeatable-antonina.ngrok-free.dev/api/scan';
   const APP_URL  = 'http://localhost:5173';
 
   let detectedType = null;
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (err) {
       console.error(err);
-      errorMsg.textContent = '⚠️ ' + err.message + ' — Make sure the SentinelAI backend is running on localhost:8000.';
+      errorMsg.textContent = '⚠️ ' + err.message + ' — Make sure the SentinelAI backend is running.';
       errorMsg.classList.remove('hidden');
     } finally {
       loader.classList.add('hidden');

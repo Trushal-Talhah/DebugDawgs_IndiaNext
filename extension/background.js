@@ -4,7 +4,7 @@
  */
 
 const APP_URL = 'http://localhost:5173';
-const API_URL = 'http://localhost:8000/api/scan';
+const API_URL = 'https://lindsey-unrepeatable-antonina.ngrok-free.dev/api/scan';
 
 // Must be absolute URL in MV3 service worker context
 const ICON_URL = chrome.runtime.getURL('logo.png');
