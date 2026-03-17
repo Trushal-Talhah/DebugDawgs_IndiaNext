@@ -3,9 +3,44 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, Zap, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import CyberParticleBackground from '../components/shared/CyberParticleBackground';
+import OnboardingTour from '../components/shared/OnboardingTour';
+
+/* ── Tour steps ── */
+const TOUR_STEPS = [
+  {
+    targetId: 'signup-name',
+    title: 'Your Full Name',
+    message: 'Enter your full name here. This is how you\'ll appear on your SentinelAI profile and in team reports.',
+  },
+  {
+    targetId: 'signup-email',
+    title: 'Your Email Address',
+    message: 'Use a valid work or personal email. You\'ll use this to log in and receive important security alerts.',
+  },
+  {
+    targetId: 'signup-password',
+    title: 'Create a Strong Password',
+    message: 'Pick a strong password with uppercase letters, numbers, and special characters. The strength meter below will guide you!',
+  },
+  {
+    targetId: 'signup-confirm',
+    title: 'Confirm Your Password',
+    message: 'Re-type your password to make sure it matches. You\'ll see a ✅ when they match!',
+  },
+  {
+    targetId: 'signup-submit',
+    title: 'Create Your Account',
+    message: 'Once all fields are filled, hit this button to create your account and enter SentinelAI!',
+  },
+  {
+    targetId: 'signup-social',
+    title: 'Sign Up Faster',
+    message: 'Prefer a one-click sign up? Use Google or GitHub to create your account instantly — no password needed. 🚀',
+  },
+];
 
 /* ── social button (shared) ── */
 function SocialButton({ onClick, icon, label, disabled }) {
@@ -51,6 +86,7 @@ export default function SignupPage() {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showTour, setShowTour] = useState(false);
 
   const handle = (fn) => async () => {
     setError('');
@@ -141,7 +177,7 @@ export default function SignupPage() {
           {/* form */}
           <form className="mt-6 space-y-4" onSubmit={handleSignup}>
             {/* full name */}
-            <div>
+            <div id="signup-name">
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full Name</label>
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -157,7 +193,7 @@ export default function SignupPage() {
             </div>
 
             {/* email */}
-            <div>
+            <div id="signup-email">
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -174,7 +210,7 @@ export default function SignupPage() {
             </div>
 
             {/* password */}
-            <div>
+            <div id="signup-password">
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -195,7 +231,7 @@ export default function SignupPage() {
             </div>
 
             {/* confirm password */}
-            <div>
+            <div id="signup-confirm">
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -218,15 +254,17 @@ export default function SignupPage() {
               </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl text-sm font-semibold text-white btn-gradient disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-            >
-              {loading ? 'Creating account…' : 'Create Account'}
-            </motion.button>
+            <div id="signup-submit">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 rounded-xl text-sm font-semibold text-white btn-gradient disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+              >
+                {loading ? 'Creating account…' : 'Create Account'}
+              </motion.button>
+            </div>
           </form>
 
           {/* divider */}
@@ -237,7 +275,7 @@ export default function SignupPage() {
           </div>
 
           {/* social buttons */}
-          <div className="space-y-3">
+          <div id="signup-social" className="space-y-3">
             <SocialButton
               disabled={loading}
               onClick={handle(loginWithGoogle)}
@@ -263,13 +301,38 @@ export default function SignupPage() {
             />
           </div>
 
+          {/* Demo Tour button */}
+          <motion.button
+            whileHover={{ scale: 1.03, boxShadow: '0 8px 30px rgba(99,102,241,0.25)' }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => setShowTour(true)}
+            type="button"
+            className="w-full mt-4 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+            style={{
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(139,92,246,0.08))',
+              border: '1.5px dashed rgba(99,102,241,0.45)',
+              color: '#6366f1',
+            }}
+          >
+            <Sparkles className="w-4 h-4" />
+            ✨ Take a Demo Tour
+          </motion.button>
+
           {/* login link */}
-          <p className="mt-6 text-center text-sm text-gray-500">
+          <p className="mt-4 text-center text-sm text-gray-500">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 no-underline">
               Sign in
             </Link>
           </p>
+
+          {/* Onboarding Tour overlay */}
+          {showTour && (
+            <OnboardingTour
+              steps={TOUR_STEPS}
+              onClose={() => setShowTour(false)}
+            />
+          )}
         </div>
       </motion.div>
     </div>
