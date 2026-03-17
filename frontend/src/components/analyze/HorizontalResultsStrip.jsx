@@ -316,7 +316,7 @@ export default function HorizontalResultsStrip({
             </div>
             <p className="text-[10px] uppercase font-bold text-muted tracking-wider mb-2">Predicted Next Steps</p>
             <div className="space-y-2">
-              {result.mitrePredictions.map((pred, pIdx) => (
+              {(result.mitrePredictions || []).map((pred, pIdx) => (
                 <div key={pIdx} className="bg-panel rounded p-2">
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-[11px] font-medium text-text">{pred.next_tactic}</span>

@@ -263,7 +263,8 @@ export function transformIncident(backendIncident) {
     source: backendIncident.content_preview || 'N/A',
     risk: Math.round(backendIncident.risk_score),
     status: getStatusFromVerdict(backendIncident.verdict),
-    timestamp: formatTimestamp(backendIncident.timestamp),
+    timestamp: backendIncident.timestamp, // Keep ISO string for processing
+    formattedTimestamp: formatTimestamp(backendIncident.timestamp), // Formatted string for UI
     threatType: backendIncident.threat_type,
     verdict: backendIncident.verdict,
   };

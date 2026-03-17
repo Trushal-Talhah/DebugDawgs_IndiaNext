@@ -181,9 +181,7 @@ export default function MitrePanel({ result, isOpen, onClose }) {
   // Null-guard: don't render if no MITRE data
   const hasData =
     result &&
-    result.mitreTactic != null &&
-    result.mitrePredictions != null &&
-    result.mitrePredictions.length > 0;
+    result.mitreTactic != null;
 
   const showPanel = hasData && isOpen;
 
@@ -249,7 +247,7 @@ export default function MitrePanel({ result, isOpen, onClose }) {
                   totalStages={result.mitreTotalStages}
                   predictedStages={
                     /* Next predicted stages based on sequence */
-                    result.mitrePredictions
+                    (result.mitrePredictions || [])
                       .map((_, i) => result.mitreStage + i + 1)
                       .filter((s) => s <= result.mitreTotalStages)
                   }
@@ -269,7 +267,7 @@ export default function MitrePanel({ result, isOpen, onClose }) {
                 <p className="mitre-section-label">
                   <ChevronRight size={13} style={{ marginRight: 4 }} /> Predicted Next Moves
                 </p>
-                {result.mitrePredictions.map((pred, i) => (
+                {(result.mitrePredictions || []).map((pred, i) => (
                   <PredictionCard key={`${pred.next_tactic}-${i}`} pred={pred} defaultExpanded={i === 0} />
                 ))}
               </div>

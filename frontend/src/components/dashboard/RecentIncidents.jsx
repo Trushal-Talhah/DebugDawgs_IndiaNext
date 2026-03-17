@@ -65,7 +65,7 @@ function RecentIncidents({ incidents }) {
                     <StatusPill status={inc.status} />
                   </td>
                   <td className="px-5 py-2.5 text-right text-xs text-muted whitespace-nowrap">
-                    {inc.timestamp}
+                    {inc.formattedTimestamp || inc.timestamp}
                   </td>
                 </tr>
               );
