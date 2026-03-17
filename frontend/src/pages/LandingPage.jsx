@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import {
   animate,
@@ -10,8 +10,9 @@ import {
 } from 'framer-motion';
 import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap, Mail, ScanSearch, Image } from 'lucide-react';
 import { fadeUp, heroWord, heroWordContainer, staggerContainer } from '../animations/variants';
-import CyberParticleBackground from '../components/shared/CyberParticleBackground';
 import { getIncidents, transformIncident } from '../lib/api';
+
+const CyberParticleBackground = lazy(() => import('../components/shared/CyberParticleBackground'));
 
 /* ─── data ─── */
 const HERO_WORDS = ['Detect.', 'Explain.', 'Respond.'];
@@ -233,7 +234,9 @@ function LandingPage() {
       {/* ════════════ HERO SECTION ════════════ */}
       <section className="relative min-h-screen overflow-hidden pt-16">
         {/* 3D Particle Background - It renders behind the glass cards */}
-        <CyberParticleBackground />
+        <Suspense fallback={null}>
+          <CyberParticleBackground />
+        </Suspense>
 
         {/* subtle radial gradient overlay for light theme */}
         <div

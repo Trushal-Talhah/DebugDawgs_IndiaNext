@@ -7,7 +7,8 @@ import {
   RefreshCw, Terminal, Maximize2
 } from 'lucide-react';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const BACKEND_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 const NIM_MODEL   = 'meta/llama-3.1-8b-instruct';
 
 const SYSTEM_PROMPT = `You are SentinelAI Analyst — an elite cybersecurity SOC analyst AI embedded inside the SentinelAI threat detection platform. You are NOT a general chatbot. You are a professional analyst with full live access to incident data.

@@ -12,7 +12,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000", 
         "http://localhost:5173",
-        "chrome-extension://eiiogncpmkfbjmbofdjdndfalalbfnal"
+        "chrome-extension://eiiogncpmkfbjmbofdjdndfalalbfnal",
+        "https://submedian-noncoherent-hellen.ngrok-free.dev"
     ]
     INCIDENTS_FILE: str = "data/incidents.json"
 
