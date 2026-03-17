@@ -140,7 +140,7 @@ export async function scanAudio(file) {
  * GET /api/incidents
  */
 export async function getIncidents(limit = 50) {
-  return apiFetch(`/api/incidents?limit=${limit}`);
+  return apiFetch(`/incidents?limit=${limit}`);
 }
 
 /**
@@ -148,7 +148,7 @@ export async function getIncidents(limit = 50) {
  * GET /api/incidents/{scan_id}
  */
 export async function getIncidentById(scanId) {
-  return apiFetch(`/api/incidents/${scanId}`);
+  return apiFetch(`/incidents/${scanId}`);
 }
 
 /**

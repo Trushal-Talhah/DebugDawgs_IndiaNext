@@ -242,3 +242,89 @@ body {
   from { opacity: 0; transform: translateY(10px); } 
   to { opacity: 1; transform: translateY(0); } 
 }
+
+/* ── Smart Detection Panel ── */
+.detect-panel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  animation: slideUp 0.3s ease-out;
+}
+
+.detect-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.detect-badge.email   { background: #eff6ff; border: 1.5px solid #bfdbfe; }
+.detect-badge.image   { background: #f0fdf4; border: 1.5px solid #bbf7d0; }
+.detect-badge.general { background: #f5f3ff; border: 1.5px solid #ddd6fe; }
+
+.detect-info { flex: 1; min-width: 0; }
+
+.detect-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detect-desc {
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* ── Secondary (ghost) button ── */
+.secondary-btn {
+  background: white;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* ── Mode tag inside result card ── */
+.mode-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin: 8px 14px 0;
+  letter-spacing: 0.03em;
+}
+
+.mode-tag.email   { background: #eff6ff; color: #2563eb; }
+.mode-tag.image   { background: #f0fdf4; color: #059669; }
+.mode-tag.general { background: #f5f3ff; color: #7c3aed; }

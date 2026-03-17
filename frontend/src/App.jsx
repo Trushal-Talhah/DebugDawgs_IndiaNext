@@ -8,6 +8,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import PagePreloader from './components/shared/PagePreloader';
 
 /* ── Protected route wrapper ── */
 function PrivateRoute() {
@@ -52,6 +53,8 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
+      {/* Global page preloader — fires on every fresh page load */}
+      <PagePreloader />
       <AppRoutes />
     </AuthProvider>
   );

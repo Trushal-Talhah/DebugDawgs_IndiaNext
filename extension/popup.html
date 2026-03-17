@@ -8,27 +8,46 @@
 </head>
 <body>
   <div class="container">
+
+    <!-- Header -->
     <div class="header">
       <div class="logo-circle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       </div>
       <div>
         <h1>SentinelAI</h1>
-        <p>On-Demand Threat Scanner</p>
+        <p>Smart Threat Scanner</p>
       </div>
     </div>
 
-    <button id="scanBtn" class="primary-btn">
-      <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      Analyze Current Page
-    </button>
-
-    <div id="loader" class="hidden">
-      <div class="spinner"></div>
-      <p>Analyzing context...</p>
+    <!-- Auto-detected content type banner -->
+    <div class="detect-panel">
+      <div id="detectBadge" class="detect-badge general">🔍</div>
+      <div class="detect-info">
+        <div id="detectLabel" class="detect-label">Scanning page content…</div>
+        <div id="detectDesc" class="detect-desc">Detecting content type automatically</div>
+      </div>
     </div>
 
-    <!-- Results Section -->
+    <!-- Scan button -->
+    <button id="scanBtn" class="primary-btn">
+      <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      Scan This Page
+    </button>
+
+    <!-- Open in App button -->
+    <button id="openAppBtn" class="secondary-btn">
+      <svg viewBox="0 0 24 24" fill="none" class="icon" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open in SentinelAI App
+    </button>
+
+    <!-- Loader -->
+    <div id="loader" class="hidden">
+      <div class="spinner"></div>
+      <p id="loaderMsg">Analyzing content…</p>
+    </div>
+
+    <!-- Results -->
     <div id="resultCard" class="glass-card hidden">
       <div class="result-header">
         <div id="verdictBadge" class="badge">Safe</div>
@@ -37,7 +56,10 @@
           <span class="score-lbl">Risk</span>
         </div>
       </div>
-      
+
+      <!-- Mode tag showing which analyzer ran -->
+      <div id="modeTag" class="mode-tag general">🔍 General Input</div>
+
       <div class="result-body">
         <p class="section-title">Analysis Summary</p>
         <p id="explanationText" class="evidence-text">No threats detected on this page.</p>

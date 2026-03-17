@@ -8,7 +8,7 @@ import {
   useMotionValueEvent,
   useTransform,
 } from 'framer-motion';
-import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap } from 'lucide-react';
+import { Sparkles, ShieldCheck, Gauge, Workflow, ArrowRight, Zap, Mail, ScanSearch, Image } from 'lucide-react';
 import { fadeUp, heroWord, heroWordContainer, staggerContainer } from '../animations/variants';
 import CyberParticleBackground from '../components/shared/CyberParticleBackground';
 import { getIncidents, transformIncident } from '../lib/api';
@@ -447,7 +447,7 @@ function LandingPage() {
 
       {/* ════════════ CTA ════════════ */}
       <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-10 md:p-14 text-center">
+        <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-10 md:p-14">
           <div className="absolute inset-0 rounded-2xl" style={{
             background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.06) 0%, transparent 60%)',
           }} />
@@ -457,26 +457,109 @@ function LandingPage() {
               whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, margin: '-100px' }}
               transition={{ duration: 0.45 }}
-              className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900"
+              className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 text-center"
             >
               Move from signal to action — fast.
             </motion.h2>
+            <motion.p
+              initial={{ y: 18, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.4, delay: 0.12 }}
+              className="text-base text-gray-500 text-center mt-3 max-w-xl mx-auto"
+            >
+              Pick your threat analysis mode and let SentinelAI do the heavy lifting.
+            </motion.p>
 
+            {/* 3 Analysis Cards */}
             <motion.div
               ref={ctaRef}
-              initial={{ y: 24, opacity: 0 }}
-              animate={ctaInView ? { y: 0, opacity: 1 } : {}}
-              transition={{ duration: 0.45, delay: 0.15 }}
-              className="mt-8"
+              className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-5"
+              initial="hidden"
+              animate={ctaInView ? 'visible' : 'hidden'}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.12 } },
+              }}
             >
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold no-underline text-white shadow-lg shadow-blue-500/25 transition-all hover:shadow-xl hover:shadow-blue-500/35 pointer-events-auto"
-                style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1, #a855f7)' }}
-              >
-                Start Monitoring
-                <ArrowRight className="w-5 h-5" />
-              </Link>
+              {[
+                {
+                  icon: Mail,
+                  title: 'Email Analysis',
+                  description: 'Detect phishing, malware links, and social engineering in suspicious emails.',
+                  features: ['Phishing Detection', 'Malware Signatures', 'Social Engineering'],
+                  gradient: 'from-blue-600 to-blue-400',
+                  glow: 'rgba(59,130,246,0.15)',
+                  to: '/analyze?type=email',
+                },
+                {
+                  icon: ScanSearch,
+                  title: 'General Input',
+                  description: 'Analyze any suspicious URL, log, text, AI prompt, or unknown input type.',
+                  features: ['Auto Classification', 'Multi-type Support', 'Deep Analysis'],
+                  gradient: 'from-purple-600 to-purple-400',
+                  glow: 'rgba(139,92,246,0.15)',
+                  to: '/analyze?type=general',
+                },
+                {
+                  icon: Image,
+                  title: 'Deepfake Image',
+                  description: 'Identify AI-generated, manipulated, or deepfake visual content instantly.',
+                  features: ['AI Generation', 'Manipulation Detection', 'Face Analysis'],
+                  gradient: 'from-emerald-600 to-emerald-400',
+                  glow: 'rgba(16,185,129,0.15)',
+                  to: '/analyze?type=image',
+                },
+              ].map(({ icon: Icon, title, description, features, gradient, glow, to }) => (
+                <motion.div
+                  key={title}
+                  variants={{ hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } } }}
+                  whileHover={{ y: -6, boxShadow: `0 20px 50px ${glow}` }}
+                  transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+                  className="group pointer-events-auto"
+                >
+                  <Link
+                    to={to}
+                    className="block h-full no-underline"
+                  >
+                    <div className="relative h-full rounded-2xl bg-white border border-gray-100 shadow-sm p-6 overflow-hidden transition-all duration-300 group-hover:border-gray-200">
+                      {/* Gradient blob on hover */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-[0.04] transition-opacity duration-500 rounded-2xl`} />
+
+                      {/* Icon badge */}
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg mb-5`}>
+                        <Icon className="w-6 h-6 text-white" />
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {title}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-sm text-gray-500 leading-relaxed mb-4">
+                        {description}
+                      </p>
+
+                      {/* Feature chips */}
+                      <div className="space-y-1.5 mb-5">
+                        {features.map((f) => (
+                          <div key={f} className="flex items-center gap-2 text-xs text-gray-400">
+                            <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${gradient}`} />
+                            {f}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Arrow CTA */}
+                      <div className="flex items-center gap-1.5 text-sm font-semibold text-gray-400 group-hover:text-blue-600 transition-colors">
+                        Get Started
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         </div>
