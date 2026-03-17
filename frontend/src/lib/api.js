@@ -94,7 +94,7 @@ export async function scanImage(file) {
  * GET /api/incidents
  */
 export async function getIncidents(limit = 50) {
-  return apiFetch(`/incidents?limit=${limit}`);
+  return apiFetch(`/api/incidents?limit=${limit}`);
 }
 
 /**
@@ -102,7 +102,7 @@ export async function getIncidents(limit = 50) {
  * GET /api/incidents/{scan_id}
  */
 export async function getIncidentById(scanId) {
-  return apiFetch(`/incidents/${scanId}`);
+  return apiFetch(`/api/incidents/${scanId}`);
 }
 
 /**
