@@ -21,6 +21,31 @@ function quickHash(str) {
   return h.toString(36);
 }
 
+/* ── Prevent Data Stealing: Redact Sensitive Info ── */
+function redactSensitiveData(text) {
+  if (!text) return text;
+  
+  // 1. Redact OTPs / Verification Codes (4-8 digits near "OTP", "code", "verification")
+  let redacted = text.replace(
+    /(?:otp|code|verification|pin|password).{0,20}?\b(\d{4,8})\b/gi, 
+    match => match.replace(/\d{4,8}/, '[REDACTED_OTP]')
+  );
+  
+  // 2. Redact Passwords (e.g., password: mysecret123)
+  redacted = redacted.replace(
+    /(?:pass(?:word)?|pwd|token|secret)\s*[:=]\s*([^\s]{5,40})/gi,
+    match => match.replace(/([^\s]{5,40})$/, '[REDACTED_SECRET]')
+  );
+
+  // 3. Redact Credit Cards (basic 13-19 digit detection, ignoring common dates)
+  redacted = redacted.replace(
+    /\b(?:\d[ -]*?){13,16}\b/g,
+    '[REDACTED_CARD]'
+  );
+
+  return redacted;
+}
+
 /* ── Detect which platform we're on ── */
 function detectPlatform() {
   const host = window.location.hostname;
@@ -112,7 +137,8 @@ function extractNewContent(platform, addedNode) {
 }
 
 /* ── Scan content — delegated to background worker to avoid mixed-content block ── */
-function scanContent(content, platform) {
+function scanContent(rawContent, platform) {
+  const content = redactSensitiveData(rawContent);
   const now = Date.now();
   const hash = quickHash(content);
 

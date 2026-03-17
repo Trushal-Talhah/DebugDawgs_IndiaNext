@@ -97,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
+            'ngrok-skip-browser-warning': 'true',
+            'X-API-Key': 'sentinel_secure_key_123'
           },
           body: JSON.stringify({ input_type: 'email', content: detectedContent }),
         });
@@ -108,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
+            'ngrok-skip-browser-warning': 'true',
+            'X-API-Key': 'sentinel_secure_key_123'
           },
           body: JSON.stringify({ input: detectedContent }),
         });

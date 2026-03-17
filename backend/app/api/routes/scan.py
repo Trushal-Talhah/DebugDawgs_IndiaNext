@@ -2,8 +2,21 @@ import uuid
 from datetime import datetime
 import asyncio
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Security
+from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
+
+from app.config import settings
+
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+def get_api_key(api_key: str = Security(api_key_header)):
+    if settings.EXTENSION_API_KEY and api_key != settings.EXTENSION_API_KEY:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or missing API Key"
+        )
+    return api_key
 
 from app.models.schemas import ScanResponse, FeatureWeight, ModuleResult
 from app.agent.threat_agent import analyze
@@ -249,7 +262,7 @@ Submit **any string** — no input type needed.
 extra API calls** — before fusing all results for compound threat detection.
 """,
 )
-async def auto_scan(request: AutoScanRequest):
+async def auto_scan(request: AutoScanRequest, api_key: str = Depends(get_api_key)):
     if not request.input.strip():
         raise HTTPException(status_code=400, detail="Input cannot be empty.")
 
@@ -272,7 +285,7 @@ async def auto_scan(request: AutoScanRequest):
     response_model=ScanResponse,
     summary="[Legacy] Analyze with explicit input_type",
 )
-async def scan_typed(request: ScanRequest):
+async def scan_typed(request: ScanRequest, api_key: str = Depends(get_api_key)):
     if not request.content.strip():
         raise HTTPException(status_code=400, detail="Content cannot be empty.")
 

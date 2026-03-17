@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     NVIDIA_API_KEY: str = ""
     NIM_API_KEY: str = ""
     HF_API_KEY: str = ""
+    EXTENSION_API_KEY: str = "sentinel_secure_key_123"  # Default dev key
     LLM_PROVIDER: str = "groq"
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000", 
