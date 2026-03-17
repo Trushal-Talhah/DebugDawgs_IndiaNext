@@ -10,7 +10,9 @@ _BASE     = Path(__file__).resolve().parent.parent.parent / "models" / "prompt_i
 _tokenizer = None
 _model     = None
 _model_ok  = False
-_device    = "cuda" if torch.cuda.is_available() else "cpu"
+import torch
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(f"[model] Running on: {DEVICE} {'(' + torch.cuda.get_device_name(0) + ')' if DEVICE == 'cuda' else '(no GPU)'}")
 
 
 def _load_model() -> bool:
@@ -21,10 +23,10 @@ def _load_model() -> bool:
         from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
         _tokenizer = DistilBertTokenizerFast.from_pretrained(str(_BASE))
         _model     = DistilBertForSequenceClassification.from_pretrained(str(_BASE))
-        _model.to(_device)
+        _model.to(DEVICE)
         _model.eval()
         _model_ok = True
-        print(f"[prompt_injection_detector] Model loaded on {_device} ✅")
+        print(f"[prompt_injection_detector] Model loaded on {DEVICE} ✅")
         return True
     except Exception as e:
         print(f"[prompt_injection_detector] Model load failed — using regex fallback. Reason: {e}")
@@ -40,7 +42,7 @@ def _ml_infer(text: str) -> tuple:
         truncation=True,
         max_length=256,        # matches training max_length
         padding=True,
-    ).to(_device)
+    ).to(DEVICE)
 
     with torch.no_grad():
         logits = _model(**inputs).logits

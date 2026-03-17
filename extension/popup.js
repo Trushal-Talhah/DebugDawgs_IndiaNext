@@ -1,23 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const scanBtn     = document.getElementById('scanBtn');
-  const loader      = document.getElementById('loader');
-  const loaderMsg   = document.getElementById('loaderMsg');
-  const resultCard  = document.getElementById('resultCard');
-  const errorMsg    = document.getElementById('errorMsg');
+  const scanBtn = document.getElementById('scanBtn');
+  const loader = document.getElementById('loader');
+  const loaderMsg = document.getElementById('loaderMsg');
+  const resultCard = document.getElementById('resultCard');
+  const errorMsg = document.getElementById('errorMsg');
   const detectBadge = document.getElementById('detectBadge');
   const detectLabel = document.getElementById('detectLabel');
-  const detectDesc  = document.getElementById('detectDesc');
-  const openAppBtn  = document.getElementById('openAppBtn');
+  const detectDesc = document.getElementById('detectDesc');
+  const openAppBtn = document.getElementById('openAppBtn');
 
-  const verdictBadge   = document.getElementById('verdictBadge');
-  const riskScore      = document.getElementById('riskScore');
-  const explanationText= document.getElementById('explanationText');
-  const confText       = document.getElementById('confText');
-  const confBar        = document.getElementById('confBar');
-  const modeTag        = document.getElementById('modeTag');
+  const verdictBadge = document.getElementById('verdictBadge');
+  const riskScore = document.getElementById('riskScore');
+  const explanationText = document.getElementById('explanationText');
+  const confText = document.getElementById('confText');
+  const confBar = document.getElementById('confBar');
+  const modeTag = document.getElementById('modeTag');
 
-  const API_URL  = 'http://localhost:8000/api/scan';
-  const APP_URL  = 'http://localhost:5173';
+  const API_URL = 'https://submedian-noncoherent-hellen.ngrok-free.dev/api/scan';
+  const APP_URL = 'https://debug-dawgs-india-next.vercel.app';
 
   let detectedType = null;
   let detectedContent = null;
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const { type, content, imageUrl, imageCount, emailSignals } = results[0].result;
-      detectedType    = type;
+      detectedType = type;
       detectedContent = content;
 
       renderDetectedBadge(type, imageCount, emailSignals, imageUrl);
@@ -49,15 +49,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (type === 'email') {
       detectBadge.textContent = '✉️';
       detectLabel.textContent = 'Email Content Detected';
-      detectDesc.textContent  = `Found ${emailSignals} email signals (From/To/Subject/Body). Will run Email Analysis.`;
+      detectDesc.textContent = `Found ${emailSignals} email signals (From/To/Subject/Body). Will run Email Analysis.`;
     } else if (type === 'image') {
       detectBadge.textContent = '🖼️';
       detectLabel.textContent = `${imageCount} Image${imageCount > 1 ? 's' : ''} Detected`;
-      detectDesc.textContent  = 'Will run Deepfake Image analysis on the dominant image.';
+      detectDesc.textContent = 'Will run Deepfake Image analysis on the dominant image.';
     } else {
       detectBadge.textContent = '🔍';
       detectLabel.textContent = 'Text / Log Content Detected';
-      detectDesc.textContent  = 'Found AI text, log entries, or general content. Will run General Input analysis.';
+      detectDesc.textContent = 'Found AI text, log entries, or general content. Will run General Input analysis.';
     }
   }
 
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
           func: detectPageContent
         });
         const r = results[0].result;
-        detectedType    = r.type;
+        detectedType = r.type;
         detectedContent = r.content;
         renderDetectedBadge(r.type, r.imageCount, r.emailSignals, r.imageUrl);
       }
@@ -95,7 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Typed endpoint — email is a valid input_type
         response = await fetch(`${API_URL}/typed`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ input_type: 'email', content: detectedContent }),
         });
       } else {
@@ -103,19 +106,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sends { input: "..." } — backend classifies the type automatically
         response = await fetch(API_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
           body: JSON.stringify({ input: detectedContent }),
         });
       }
 
-      if (!response.ok) throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+      if (!response.ok) {
+        let errorDetail = response.statusText;
+        try {
+          const errData = await response.json();
+          if (errData.detail) {
+            errorDetail = typeof errData.detail === 'string' ? errData.detail : JSON.stringify(errData.detail);
+          }
+        } catch (e) { }
+        throw new Error(`Server returned ${response.status}: ${errorDetail}`);
+      }
 
       const data = await response.json();
       updateResults(data, detectedType);
 
     } catch (err) {
       console.error(err);
-      errorMsg.textContent = '⚠️ ' + err.message + ' — Make sure the SentinelAI backend is running on localhost:8000.';
+      errorMsg.textContent = '⚠️ ' + err.message + ' — Ensure ngrok is running and backend is reachable.';
       errorMsg.classList.remove('hidden');
     } finally {
       loader.classList.add('hidden');
@@ -224,20 +239,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const c = Math.round(data.confidence ?? 95);
 
     riskScore.textContent = s;
-    confText.textContent  = c + '%';
+    confText.textContent = c + '%';
     setTimeout(() => { confBar.style.width = c + '%'; }, 50);
 
     // Mode tag
     if (modeTag) {
       modeTag.textContent =
         type === 'email' ? '✉️ Email Analysis'
-        : type === 'image' ? '🖼️ Deepfake Image'
-        : '🔍 General Input';
+          : type === 'image' ? '🖼️ Deepfake Image'
+            : '🔍 General Input';
       modeTag.className = 'mode-tag ' + type;
     }
 
     verdictBadge.className = 'badge';
-    riskScore.className    = 'score-val';
+    riskScore.className = 'score-val';
 
     if (s < 40) {
       verdictBadge.textContent = 'Safe';

@@ -3,7 +3,6 @@
   "name": "SentinelAI - Threat Scanner",
   "version": "1.1",
   "description": "Real-time threat detection for emails and messages. Scans Gmail, Outlook, WhatsApp Web, and any web page for phishing, deepfakes, and AI-generated threats.",
-
   "permissions": [
     "activeTab",
     "scripting",
@@ -11,7 +10,6 @@
     "storage",
     "tabs"
   ],
-
   "host_permissions": [
     "http://localhost:8000/*",
     "https://mail.google.com/*",
@@ -20,13 +18,12 @@
     "https://web.whatsapp.com/*",
     "https://mail.yahoo.com/*",
     "https://teams.microsoft.com/*",
-    "<all_urls>"
+    "<all_urls>",
+    "https://submedian-noncoherent-hellen.ngrok-free.dev/*"
   ],
-
   "background": {
     "service_worker": "background.js"
   },
-
   "content_scripts": [
     {
       "matches": [
@@ -37,17 +34,17 @@
         "https://mail.yahoo.com/*",
         "https://teams.microsoft.com/*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
-
   "action": {
     "default_popup": "popup.html",
     "default_title": "Analyze with SentinelAI"
   },
-
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:8000 http://localhost:5173;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src http://localhost:8000 http://localhost:5173 https://*.ngrok-free.dev;"
   }
 }

@@ -6,7 +6,7 @@
  */
 
 // No direct fetch here — all API calls go through background worker
-// to avoid mixed-content blocking on HTTPS pages
+// to avoid mixed-content blocking on HTTPS pages 
 const SCAN_COOLDOWN_MS = 8000;   // minimum gap between scans (per page)
 
 let lastScanTime = 0;

@@ -3,8 +3,8 @@
  * Handles API calls from content.js and fires native browser notifications.
  */
 
-const APP_URL = 'http://localhost:5173';
-const API_URL = 'http://localhost:8000/api/scan';
+const APP_URL = 'https://debug-dawgs-india-next.vercel.app';
+const API_URL = 'https://submedian-noncoherent-hellen.ngrok-free.dev/api/scan';
 
 // Must be absolute URL in MV3 service worker context
 const ICON_URL = chrome.runtime.getURL('logo.png');
@@ -138,7 +138,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
       body: JSON.stringify({ input: content }),
     })
       .then(r => {
