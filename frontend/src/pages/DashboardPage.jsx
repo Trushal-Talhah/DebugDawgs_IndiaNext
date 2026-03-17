@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import { ScanSearch } from 'lucide-react';
 import StatsOverview from '../components/dashboard/StatsOverview';
 import RecentIncidents from '../components/dashboard/RecentIncidents';
-import DashboardCharts from '../components/dashboard/DashboardCharts';
 import { getIncidents, transformIncident } from '../lib/api';
+
+const DashboardCharts = lazy(() => import('../components/dashboard/DashboardCharts'));
 
 function DashboardPage() {
   const [incidents, setIncidents] = useState([]);
@@ -70,7 +71,9 @@ function DashboardPage() {
       <StatsOverview stats={stats} isLoading={isLoading} />
 
       {/* Visual Charts */}
-      <DashboardCharts stats={stats} incidents={incidents} />
+      <Suspense fallback={<div className="bg-bg rounded-xl border border-border p-6" />}>
+        <DashboardCharts stats={stats} incidents={incidents} />
+      </Suspense>
 
       {/* Recent incidents */}
       {isLoading ? (
