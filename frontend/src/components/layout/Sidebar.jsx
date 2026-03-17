@@ -29,8 +29,6 @@ const NAV_ITEMS = [
       { to: '/analyze?type=email', label: 'Email', icon: Mail },
       { to: '/analyze?type=general', label: 'General Input', icon: ScanSearch },
       { to: '/analyze?type=image', label: 'Deepfake Image', icon: Image },
-      { to: '/analyze?type=video', label: 'Deepfake Video', icon: Film },
-      { to: '/analyze?type=audio', label: 'Voice Deepfake', icon: Mic },
     ]
   },
   { to: '/incidents', icon: ShieldAlert, label: 'Incidents' },

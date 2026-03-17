@@ -175,11 +175,7 @@ function AnalyzePage() {
                 ? 'Pick an email from your inbox or paste content to detect phishing, malware, and social engineering patterns.'
                 : urlType === 'image'
                   ? 'Upload an image to identify AI-generated, manipulated, or deepfake visual content.'
-                  : urlType === 'video'
-                    ? 'Upload a video to detect deepfake frames, manipulated content, and deepfake indicators.'
-                    : urlType === 'audio'
-                      ? 'Upload audio to detect voice cloning, synthetic speech, and AI-generated audio content.'
-                      : 'Paste any suspicious text, URL, log, or prompt to generate a structured threat assessment.'}
+                  : 'Paste any suspicious text, URL, log, or prompt to generate a structured threat assessment.'}
             </p>
           </div>
 
@@ -194,8 +190,6 @@ function AnalyzePage() {
               <AnalyzePanel
                 onAnalyze={handleAnalyze}
                 onAnalyzeImage={handleAnalyzeImage}
-                onAnalyzeVideo={handleAnalyzeVideo}
-                onAnalyzeAudio={handleAnalyzeAudio}
                 isLoading={isLoading}
                 prefillValue={prefillValue}
               />
