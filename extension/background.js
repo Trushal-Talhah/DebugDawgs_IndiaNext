@@ -3,8 +3,13 @@
  * Handles API calls from content.js and fires native browser notifications.
  */
 
+<<<<<<< HEAD
 const APP_URL = 'https://debug-dawgs-india-next.vercel.app';
 const API_URL = 'https://submedian-noncoherent-hellen.ngrok-free.dev/api/scan';
+=======
+const APP_URL = 'http://localhost:5173';
+const API_URL = 'https://lindsey-unrepeatable-antonina.ngrok-free.dev/api/scan';
+>>>>>>> de1252a4ffe0e599ae7a7224bb01941f1e318229
 
 // Must be absolute URL in MV3 service worker context
 const ICON_URL = chrome.runtime.getURL('logo.png');

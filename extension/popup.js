@@ -16,8 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const confBar = document.getElementById('confBar');
   const modeTag = document.getElementById('modeTag');
 
+<<<<<<< HEAD
   const API_URL = 'https://submedian-noncoherent-hellen.ngrok-free.dev/api/scan';
   const APP_URL = 'https://debug-dawgs-india-next.vercel.app';
+=======
+  const API_URL  = 'https://lindsey-unrepeatable-antonina.ngrok-free.dev/api/scan';
+  const APP_URL  = 'http://localhost:5173';
+>>>>>>> de1252a4ffe0e599ae7a7224bb01941f1e318229
 
   let detectedType = null;
   let detectedContent = null;
@@ -132,7 +137,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     } catch (err) {
       console.error(err);
+<<<<<<< HEAD
       errorMsg.textContent = '⚠️ ' + err.message + ' — Ensure ngrok is running and backend is reachable.';
+=======
+      errorMsg.textContent = '⚠️ ' + err.message + ' — Make sure the SentinelAI backend is running.';
+>>>>>>> de1252a4ffe0e599ae7a7224bb01941f1e318229
       errorMsg.classList.remove('hidden');
     } finally {
       loader.classList.add('hidden');
