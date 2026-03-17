@@ -1,12 +1,13 @@
 
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import CyberParticleBackground from '../components/shared/CyberParticleBackground';
 import OnboardingTour from '../components/shared/OnboardingTour';
+
+const CyberParticleBackground = lazy(() => import('../components/shared/CyberParticleBackground'));
 
 /* ── Tour steps ── */
 const TOUR_STEPS = [
@@ -135,7 +136,9 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden py-10" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0fdf4 100%)' }}>
       {/* 3D particle background */}
-      <CyberParticleBackground />
+      <Suspense fallback={null}>
+        <CyberParticleBackground />
+      </Suspense>
 
       {/* Floating gradient orbs */}
       <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-400/10 blur-3xl animate-float" />
