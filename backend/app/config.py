@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     # Endpoints that rely on GROQ should validate this at call time.
     GROQ_API_KEY: str = ""
     NVIDIA_API_KEY: str = ""
+    NIM_API_KEY: str = ""
     HF_API_KEY: str = ""
     LLM_PROVIDER: str = "groq"
     CORS_ORIGINS: List[str] = [

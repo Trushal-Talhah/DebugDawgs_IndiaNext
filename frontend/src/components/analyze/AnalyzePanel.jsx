@@ -1,35 +1,41 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Mail, ScanSearch, ChevronDown, Image } from 'lucide-react';
+import { Mail, ScanSearch, ChevronDown, Image, Film, Mic } from 'lucide-react';
 import { SAMPLE_INPUTS } from '../../data/sampleData';
 
 const TYPE_OPTIONS = [
   { value: 'email', label: 'Email', icon: Mail },
   { value: 'general', label: 'General Input', icon: ScanSearch },
   { value: 'image', label: 'Deepfake Image', icon: Image },
+  { value: 'video', label: 'Deepfake Video', icon: Film },
+  { value: 'audio', label: 'Voice Deepfake', icon: Mic },
 ];
 
-function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillValue = '' }) {
+function AnalyzePanel({ onAnalyze, onAnalyzeImage, onAnalyzeVideo, onAnalyzeAudio, isLoading = false, prefillValue = '' }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const urlType = searchParams.get('type') || 'email';
   
   const [type, setType] = useState(urlType);
   const [mode, setMode] = useState('auto');
   const [input, setInput] = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   /* ── sync type with URL whenever it changes ── */
   useEffect(() => {
     if (urlType !== type) {
       setType(urlType);
+      setMediaFile(null);
+      setMediaPreview(null);
     }
   }, [urlType]);
 
   function handleTypeChange(newType) {
     setType(newType);
     setDropdownOpen(false);
+    setMediaFile(null);
+    setMediaPreview(null);
     setSearchParams({ type: newType });
   }
 
@@ -47,7 +53,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
 
   const currentType = TYPE_OPTIONS.find((t) => t.value === type);
   const CurrentIcon = currentType.icon;
-  const isImageMode = type === 'image';
+  const isMediaMode = ['image', 'video', 'audio'].includes(type);
 
   function handleLoadSample() {
     const sample = SAMPLE_INPUTS[type];
@@ -56,27 +62,32 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
     }
   }
 
-  function handleImageChange(e) {
+  function handleMediaChange(e) {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      setMediaFile(file);
+      if (type === 'image') {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setMediaPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // For video and audio, show filename
+        setMediaPreview(file.name);
+      }
     }
   }
 
-  function clearImage() {
-    setImageFile(null);
-    setImagePreview(null);
+  function clearMedia() {
+    setMediaFile(null);
+    setMediaPreview(null);
   }
 
   /* ── handle pasting images from clipboard ── */
   useEffect(() => {
     function handleGlobalPaste(e) {
-      if (!isImageMode) return;
+      if (type !== 'image') return;
       const items = e.clipboardData?.items;
       if (!items) return;
 
@@ -84,10 +95,10 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
         if (item.type.startsWith('image/')) {
           const file = item.getAsFile();
           if (file) {
-            setImageFile(file);
+            setMediaFile(file);
             const reader = new FileReader();
             reader.onloadend = () => {
-              setImagePreview(reader.result);
+              setMediaPreview(reader.result);
             };
             reader.readAsDataURL(file);
             break;
@@ -97,19 +108,25 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
     }
 
     // Only attach global paste listener if in image mode
-    if (isImageMode) {
+    if (type === 'image') {
       document.addEventListener('paste', handleGlobalPaste);
     }
     return () => {
       document.removeEventListener('paste', handleGlobalPaste);
     };
-  }, [isImageMode]);
+  }, [type]);
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (isImageMode) {
-      if (!imageFile) return;
-      onAnalyzeImage?.(imageFile);
+    if (isMediaMode) {
+      if (!mediaFile) return;
+      if (type === 'image') {
+        onAnalyzeImage?.(mediaFile);
+      } else if (type === 'video') {
+        onAnalyzeVideo?.(mediaFile);
+      } else if (type === 'audio') {
+        onAnalyzeAudio?.(mediaFile);
+      }
     } else {
       if (!input.trim()) return;
       onAnalyze({ mode, type, input: input.trim() });
@@ -160,43 +177,87 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
         )}
       </div>
 
-      {/* Input area - Text or Image */}
+      {/* Input area - Text or Media */}
       <div className="mb-3">
-        {isImageMode ? (
+        {isMediaMode ? (
           <>
             <label className="block text-xs font-medium text-muted mb-1.5">
-              Upload Image
+              Upload {type === 'image' ? 'Image' : type === 'video' ? 'Video' : 'Audio'}
             </label>
-            {imagePreview ? (
+            {mediaPreview ? (
               <div className="relative border-2 border-accent/20 rounded-lg p-1 bg-accent/5">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-48 object-contain bg-panel border border-border rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={clearImage}
-                  className="absolute top-3 right-3 p-1.5 bg-bg/80 rounded-lg border border-border hover:bg-panel text-muted hover:text-danger transition-all shadow-sm"
-                  aria-label="Remove image"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                {type === 'image' ? (
+                  <>
+                    <img
+                      src={mediaPreview}
+                      alt="Preview"
+                      className="w-full h-48 object-contain bg-panel border border-border rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={clearMedia}
+                      className="absolute top-3 right-3 p-1.5 bg-bg/80 rounded-lg border border-border hover:bg-panel text-muted hover:text-danger transition-all shadow-sm"
+                      aria-label="Remove image"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between p-4 bg-panel border border-border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      {type === 'video' ? (
+                        <Film className="w-8 h-8 text-accent" />
+                      ) : (
+                        <Mic className="w-8 h-8 text-accent" />
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-text">{mediaPreview}</p>
+                        <p className="text-xs text-muted">{type === 'video' ? 'Video ready for analysis' : 'Audio ready for analysis'}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearMedia}
+                      className="p-1.5 bg-bg/80 rounded-lg border border-border hover:bg-panel text-muted hover:text-danger transition-all shadow-sm"
+                      aria-label={`Remove ${type}`}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <label 
                 className="flex flex-col items-center justify-center w-full h-48 bg-panel border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-accent/40 focus-within:ring-2 focus-within:ring-accent/30 focus-within:border-accent transition-colors"
                 tabIndex={0}
               >
-                <Image className="w-8 h-8 text-muted mb-2" />
-                <span className="text-sm font-medium text-text">Click to upload, drop an image, or <span className="text-accent underline decoration-accent/30 underline-offset-2">paste (Ctrl+V)</span></span>
-                <span className="text-xs text-muted mt-1.5">JPEG, PNG, WebP, GIF (max 5MB)</span>
+                {type === 'image' ? (
+                  <Image className="w-8 h-8 text-muted mb-2" />
+                ) : type === 'video' ? (
+                  <Film className="w-8 h-8 text-muted mb-2" />
+                ) : (
+                  <Mic className="w-8 h-8 text-muted mb-2" />
+                )}
+                <span className="text-sm font-medium text-text">
+                  Click to upload or drop {type === 'image' ? 'an image' : type === 'video' ? 'a video' : 'an audio file'}
+                </span>
+                <span className="text-xs text-muted mt-1.5">
+                  {type === 'image' && 'JPEG, PNG, WebP, GIF (max 5MB)'}
+                  {type === 'video' && 'MP4, AVI, MOV, WEBM (max 50MB)'}
+                  {type === 'audio' && 'WAV, MP3, OGG, FLAC (max 20MB)'}
+                </span>
                 <input
                   type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  onChange={handleImageChange}
+                  accept={
+                    type === 'image' ? 'image/jpeg,image/png,image/webp,image/gif' :
+                    type === 'video' ? 'video/mp4,video/x-msvideo,video/quicktime,video/webm' :
+                    'audio/wav,audio/mpeg,audio/ogg,audio/flac,audio/webm'
+                  }
+                  onChange={handleMediaChange}
                   className="opacity-0 w-0 h-0"
                   tabIndex={-1}
                 />
@@ -235,7 +296,7 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
       {/* Submit */}
       <button
         type="submit"
-        disabled={(isImageMode ? !imageFile : !input.trim()) || isLoading}
+        disabled={(isMediaMode ? !mediaFile : !input.trim()) || isLoading}
         className="w-full py-2.5 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isLoading ? (
@@ -250,8 +311,12 @@ function AnalyzePanel({ onAnalyze, onAnalyzeImage, isLoading = false, prefillVal
 
       {/* How-to hint */}
       <p className="text-xs text-muted mt-3 text-center">
-        {isImageMode
+        {type === 'image'
           ? 'Upload an image to check for deepfake or AI-generated content'
+          : type === 'video'
+          ? 'Upload a video to detect deepfake manipulation and AI-generated frames'
+          : type === 'audio'
+          ? 'Upload audio to detect voice cloning and AI-generated speech'
           : 'Paste content or click "Load sample" for a pre-filled demo'}
       </p>
     </form>

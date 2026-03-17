@@ -11,7 +11,7 @@ import FeatureImportanceBar from '../components/analyze/FeatureImportanceBar';
 import CounterfactualControl from '../components/analyze/CounterfactualControl';
 import ResponseActions from '../components/analyze/ResponseActions';
 import MitrePanel from '../components/analyze/MitrePanel';
-import { scanThreat, scanImage, transformScanResponse } from '../lib/api';
+import { scanThreat, scanImage, scanVideo, scanAudio, transformScanResponse } from '../lib/api';
 
 function AnalyzePage() {
   const { isSimple } = useSimpleMode();
@@ -83,6 +83,52 @@ function AnalyzePage() {
     }
   }
 
+  async function handleAnalyzeVideo(file) {
+    setIsLoading(true);
+    setResult(null);
+    setError(null);
+    setShowEvidence(false);
+
+    // Auto-scroll to loading state
+    setTimeout(() => {
+      scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
+    try {
+      const response = await scanVideo(file);
+      const transformedResult = transformScanResponse(response);
+      setResult(transformedResult);
+    } catch (err) {
+      setError(err.message || 'Failed to analyze video. Please try again.');
+      console.error('Video analysis error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleAnalyzeAudio(file) {
+    setIsLoading(true);
+    setResult(null);
+    setError(null);
+    setShowEvidence(false);
+
+    // Auto-scroll to loading state
+    setTimeout(() => {
+      scrollAnchorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+
+    try {
+      const response = await scanAudio(file);
+      const transformedResult = transformScanResponse(response);
+      setResult(transformedResult);
+    } catch (err) {
+      setError(err.message || 'Failed to analyze audio. Please try again.');
+      console.error('Audio analysis error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   function handleAction(actionId) {
     console.log('Action taken:', actionId);
   }
@@ -129,7 +175,11 @@ function AnalyzePage() {
                 ? 'Pick an email from your inbox or paste content to detect phishing, malware, and social engineering patterns.'
                 : urlType === 'image'
                   ? 'Upload an image to identify AI-generated, manipulated, or deepfake visual content.'
-                  : 'Paste any suspicious text, URL, log, or prompt to generate a structured threat assessment.'}
+                  : urlType === 'video'
+                    ? 'Upload a video to detect deepfake frames, manipulated content, and deepfake indicators.'
+                    : urlType === 'audio'
+                      ? 'Upload audio to detect voice cloning, synthetic speech, and AI-generated audio content.'
+                      : 'Paste any suspicious text, URL, log, or prompt to generate a structured threat assessment.'}
             </p>
           </div>
 
@@ -144,6 +194,8 @@ function AnalyzePage() {
               <AnalyzePanel
                 onAnalyze={handleAnalyze}
                 onAnalyzeImage={handleAnalyzeImage}
+                onAnalyzeVideo={handleAnalyzeVideo}
+                onAnalyzeAudio={handleAnalyzeAudio}
                 isLoading={isLoading}
                 prefillValue={prefillValue}
               />
